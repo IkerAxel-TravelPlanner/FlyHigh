@@ -6,23 +6,41 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/logo_flyhigh"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/logo_flyhigh_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="31">
+
+        <!-- Main Activity (La actividad principal) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Navigation">
+            android:theme="@style/Theme.Navigation"
+            tools:ignore="MissingClass">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- About Activity (Página sobre nosotros) -->
+        <activity
+            android:name=".AboutActivity"
+            android:exported="true"
+            android:label="@string/title_activity_about"
+            android:theme="@style/Theme.App.Starting" />
+
+        <!-- Terms and Conditions Activity -->
+        <activity
+            android:name=".TermsConditionsActivity"
+            android:exported="true"
+            android:label="@string/title_activity_terms_conditions"
+            android:theme="@style/Theme.App.Starting" />
+
+    </application>
 </manifest>
+
+

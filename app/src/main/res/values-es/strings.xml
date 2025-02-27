@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FlyHigh</string>
+    <string name="title_activity_about">Acerca de</string>
+    <string name="terms_text">Términos y Condiciones</string> <!-- Traducción al español -->
+</resources>
