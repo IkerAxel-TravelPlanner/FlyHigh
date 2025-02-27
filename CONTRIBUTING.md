@@ -1,5 +1,5 @@
 # Contributing to Travel Planner 🚀
-Hola Prueba Axel
+Hola Prueba Axel 
 ## Branching Strategy 🌿
 
 - `main`: Contiene el código estable y en producción.
