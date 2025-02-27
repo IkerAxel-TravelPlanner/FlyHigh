@@ -18,8 +18,8 @@ La aplicación Travel Planner es una herramienta diseñada para ayudar a los usu
 - **Iker Infantes** - Designer
 
 ## Tecnologías utilizadas
-- **Kotlin**: Lenguaje principal para el desarrollo de la app.
-- **Android SDK**: Herramientas oficiales de desarrollo para Android.
+- **Kotlin**: Lenguaje principal para el desarrollo de la app. Version: Kotlin Version 26
+- **Android SDK**: Herramientas oficiales de desarrollo para Android. Version: Android Version 8.0
 - **Jetpack Libraries**: Para gestión de UI, navegación, y otros.
 - **GitHub Actions**: Para CI/CD (Integración Continua y Despliegue Continuo).
 
