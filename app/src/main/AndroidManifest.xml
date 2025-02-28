@@ -13,34 +13,17 @@
         android:theme="@style/Theme.App.Starting"
         tools:targetApi="31">
 
-        <!-- Main Activity (La actividad principal) -->
+        <!-- Main Activity (Pantalla principal con Compose) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.Navigation"
-            tools:ignore="MissingClass">
+            android:theme="@style/Theme.Navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- About Activity (Página sobre nosotros) -->
-        <activity
-            android:name=".AboutActivity"
-            android:exported="true"
-            android:label="@string/title_activity_about"
-            android:theme="@style/Theme.App.Starting" />
-
-        <!-- Terms and Conditions Activity -->
-        <activity
-            android:name=".TermsConditionsActivity"
-            android:exported="true"
-            android:label="@string/title_activity_terms_conditions"
-            android:theme="@style/Theme.App.Starting" />
-
     </application>
 </manifest>
-
-

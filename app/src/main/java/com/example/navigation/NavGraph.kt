@@ -1,57 +1,50 @@
 package com.example.navigation
 
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.navigation.ui.screens.Content1
-import com.example.navigation.ui.screens.HomeScreen
-import com.example.navigation.ui.screens.HomeScreenMenu
-import com.example.navigation.ui.screens.LoginScreen
-import com.example.navigation.ui.screens.ProfileScreen
-
-//@Composable
-//fun NavGraph(navController: NavHostController) {
-//    NavHost(navController = navController, startDestination = "login") {
-//        composable("login") { LoginScreen(navController) }
-//        composable("home") { HomeScreen(navController) }
-//        composable("profile") { ProfileScreen(navController, null) }
-//        composable("profile/{id}",
-//                arguments = listOf(navArgument("id"){
-//                            type = NavType.IntType
-//                })
-//        ) {
-//            var userId = it.arguments?.getInt("id") ?: -1
-//            ProfileScreen(navController, userId)
-//        }
-//    }
-//}
-
+import com.example.navigation.ui.screens.*
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     NavHost(navController = navController, startDestination = "login") {
-        composable("login") { LoginScreen(navController) }
-        composable("home") { HomeScreenMenu(navController) { innerPadding ->
-            Content1(navController, innerPadding)
-        }}
+
+        // Pantalla de Login
+        composable("login") { LoginScreen2(navController) }
+
+        // Pantalla de Home
+        composable("home") { HomeScreenScaffold2(navController) }
+
+        // Pantalla de Perfil
         composable("profile") { ProfileScreen(navController, null) }
+
         composable("profile/{id}",
-                arguments = listOf(navArgument("id"){
-                            type = NavType.IntType
-                })
+            arguments = listOf(navArgument("id") {
+                type = NavType.IntType
+            })
         ) {
-            var userId = it.arguments?.getInt("id") ?: -1
+            val userId = it.arguments?.getInt("id") ?: -1
             ProfileScreen(navController, userId)
         }
+
         composable("profileMenu") { ProfileScreen(navController, null) }
+
+        // Sección de Configuración (Settings)
+        composable("settings") { SettingsScreen(navController) }
+
+        // Pantalla de "About" donde se muestra la información de "About Us"
+        composable("about/us") { AboutUsScreen(navController) }
+
+        // Pantalla de Acerca de Nosotros (Información adicional)
+        composable("settings/about") { AboutScreen2(navController) }
+
+        // Pantalla de Términos y Condiciones
+        composable("settings/terms") { TermsAndConditionsScreen(navController) }
+
+        // Pantalla de Política de Privacidad
+        composable("settings/privacy") { PrivacyPolicyScreen(navController) }
     }
 }
