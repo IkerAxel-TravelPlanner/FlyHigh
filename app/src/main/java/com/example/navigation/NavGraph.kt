@@ -32,19 +32,13 @@ fun NavGraph(navController: NavHostController) {
 
         composable("profileMenu") { ProfileScreen(navController, null) }
 
-        // Sección de Configuración (Settings)
+        // Sección de "Acerca de" (About Us)
+        composable("about") { AboutScreen1(navController) }
+        composable("about/details") { AboutScreen2(navController) }
+        composable("about/terms") { TermsAndConditionsScreen(navController) }
+        composable("about/privacy") { PrivacyPolicyScreen(navController) }
+
+        // Pantalla de Configuración (Settings)
         composable("settings") { SettingsScreen(navController) }
-
-        // Pantalla de "About" donde se muestra la información de "About Us"
-        composable("about/us") { AboutUsScreen(navController) }
-
-        // Pantalla de Acerca de Nosotros (Información adicional)
-        composable("settings/about") { AboutScreen2(navController) }
-
-        // Pantalla de Términos y Condiciones
-        composable("settings/terms") { TermsAndConditionsScreen(navController) }
-
-        // Pantalla de Política de Privacidad
-        composable("settings/privacy") { PrivacyPolicyScreen(navController) }
     }
 }
