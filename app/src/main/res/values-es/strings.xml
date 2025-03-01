@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">FlyHigh</string>
-    <string name="title_activity_about">Acerca de</string>
-    <string name="terms_text">Términos y Condiciones</string>
     <string name="default_user">user1</string>
     <string name="default_pass">123456</string>
+    <string name="app_name">Mi Aplicación</string>
+    <string name="change_language">Cambiar Idioma</string>
+    <string name="english">Inglés</string>
+    <string name="spanish">Español</string>
+    <string name="portuguese">Portugués</string>
 </resources>

@@ -1,10 +1,12 @@
 package com.example.navigation.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
@@ -22,25 +24,38 @@ fun AboutScreen1(navController: NavHostController) {
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        Button(
+        // Botón "Información" con color azul consistente
+        ElevatedButton(
             onClick = { navController.navigate("about/details") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
         ) {
-            Text("Información")
+            Text(text = "Información", color = Color.White) // Texto en blanco
         }
 
-        Button(
+        // Botón "Términos y Condiciones" con color azul consistente
+        ElevatedButton(
             onClick = { navController.navigate("about/terms") },
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
         ) {
-            Text("Términos y Condiciones")
+            Text(text = "Términos y Condiciones", color = Color.White) // Texto en blanco
         }
 
-        Button(
+        // Botón "Política de Privacidad" con color azul consistente
+        ElevatedButton(
             onClick = { navController.navigate("about/privacy") },
-            modifier = Modifier.fillMaxWidth()
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
         ) {
-            Text("Política de Privacidad")
+            Text(text = "Política de Privacidad", color = Color.White) // Texto en blanco
         }
     }
 }
