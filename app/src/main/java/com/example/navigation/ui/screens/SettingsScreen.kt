@@ -25,7 +25,7 @@ fun SettingsScreen(navController: NavHostController) {
             modifier = Modifier.padding(bottom = 32.dp)
         )
 
-        // Botón "Acerca de" que ahora abrirá AboutScreen1
+        // Botón "Acerca de" que abre el AboutScreen1
         ElevatedButton(
             onClick = { navController.navigate("about") },
             shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
@@ -34,10 +34,68 @@ fun SettingsScreen(navController: NavHostController) {
                 .padding(bottom = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color morado
         ) {
-            Text(text = "Acerca de")
+            Text(text = "Acerca de", color = Color.White) // Color texto blanco
         }
 
-        // Otros botones de configuración
-        // ...
+        // Botón para "Versión" que abre la pantalla de VersionScreen
+        ElevatedButton(
+            onClick = { navController.navigate("version") },
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color morado
+        ) {
+            Text(text = "Versión", color = Color.White) // Color texto blanco
+        }
+
+        // Botón para cambiar idioma
+        ElevatedButton(
+            onClick = { navController.navigate("language_settings") },
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color morado
+        ) {
+            Text(text = "Cambiar Idioma", color = Color.White) // Color texto blanco
+        }
+
+
+        // Botón para notificaciones (aún no implementado)
+        ElevatedButton(
+            onClick = { /* TODO: Implementar ajustes de notificaciones */ },
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color morado
+        ) {
+            Text(text = "Notificaciones", color = Color.White) // Color texto blanco
+        }
+
+        // Botón para ajustes de seguridad (aún no implementado)
+        ElevatedButton(
+            onClick = { /* TODO: Implementar ajustes de seguridad */ },
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color morado
+        ) {
+            Text(text = "Seguridad y Privacidad", color = Color.White) // Color texto blanco
+        }
+
+        // Botón para ajustes avanzados (aún no implementado)
+        ElevatedButton(
+            onClick = { /* TODO: Implementar ajustes avanzados */ },
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color morado
+        ) {
+            Text(text = "Ajustes Avanzados", color = Color.White) // Color texto blanco
+        }
     }
 }

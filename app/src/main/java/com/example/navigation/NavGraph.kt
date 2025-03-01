@@ -1,6 +1,7 @@
 package com.example.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -40,5 +41,11 @@ fun NavGraph(navController: NavHostController) {
 
         // Pantalla de Configuración (Settings)
         composable("settings") { SettingsScreen(navController) }
+
+        // Pantalla de Versión
+        composable("version") { VersionScreen(navController) }
+
+        // Pantalla de Configuración de Idioma
+        composable("language_settings") { LanguageSettingsScreen(navController, context = LocalContext.current) }
     }
 }
