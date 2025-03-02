@@ -70,8 +70,9 @@ El sistema está diseñado de manera que cada entidad pueda mapearse fácilmente
 **Estructura MVVM + Modular**
 - `Model`: Maneja los datos y la lógica de negocio (ej. clases como `User`, `Trip`).
 - `View`: Maneja la UI (archivos XML y Activities/Fragments en Kotlin o Java).
-- `Controller`: Maneja la interacción entre el modelo y la vista (ViewModels, Activities, Fragments).
-
+- `ViewModel`: Maneja la lógica de presentación y sobrevive a cambios de configuración.
+- Se separa el proyecto en diferentes módulos (app, core, features).
+- Facilita la escalabilidad y permite la reutilización de código.
 
 ## Mejoras Futuras
 - **Gestión de Presupuesto**: Agregar seguimiento financiero a los viajes.
