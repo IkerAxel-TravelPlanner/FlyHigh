@@ -82,4 +82,4 @@ Si tienes ideas para mejorar la aplicación, abre un **Issue** con la etiqueta `
 
 ---
 
-🎉 ¡Gracias por contribuir a **Travel Planner**!   
+🎉 ¡Gracias por contribuir a **Travel Planner**!    
