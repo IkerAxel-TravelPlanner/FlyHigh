@@ -1,9 +1,10 @@
-package com.example.navigation.modules;
+package com.example.navigation.modules
 
-import java.util.List;
+import android.health.connect.datatypes.ExerciseRoute
+import com.google.android.libraries.mapsplatform.transportation.consumer.model.Route
 
-public class Map {
-    public void showLocation(double latitude, double longitude) {}
-    public List<String> getNearbyPlaces(String category) { return null; }
-    //public Route getDirections(Location start, Location end) { return null; }
+class Map {
+    fun showLocation(latitude: Double, longitude: Double) {}
+    fun getNearbyPlaces(category: String): List<String> = listOf()
+    fun getDirections(start: ExerciseRoute.Location, end: ExerciseRoute.Location): Route? = null
 }

@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.protolite.well.known.types)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.appcompat)
+    implementation(libs.transportation.consumer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

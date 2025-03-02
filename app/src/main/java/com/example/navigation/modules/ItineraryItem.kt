@@ -1,21 +1,16 @@
-package com.example.navigation.modules;
+package com.example.navigation.modules
 
-import android.location.Location;
+import android.health.connect.datatypes.ExerciseRoute
+import java.util.Date
 
-import java.util.Date;
-
-public class ItineraryItem {
-    private String itemId;
-    private String title;
-    private String description;
-    private Date startTime;
-    private Date endTime;
-    private Location location;
-
-    public void editItem() {
-        //TODO
-    }
-    public void deleteItem() {
-        //TODO
-    }
+class ItineraryItem(
+    var itemId: String,
+    var title: String,
+    var description: String,
+    var startTime: Date,
+    var endTime: Date,
+    var location: ExerciseRoute.Location
+) {
+    fun editItem() {}
+    fun deleteItem() {}
 }

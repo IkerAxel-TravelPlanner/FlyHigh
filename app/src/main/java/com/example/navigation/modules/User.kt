@@ -1,24 +1,17 @@
-package com.example.navigation.modules;
+package com.example.navigation.modules
 
-import java.util.Date;
-import java.util.List;
+import java.util.Date
 
-public class User {
-    private String userId;
-    private String name;
-    private String email;
-    private String phoneNumber;
-    private Date dateOfBirth;
-    private String passwordHash;
-    private List<Trip> trips;
-
-    public void register(String email, String password) {
-        //TODO
-    }
-    public void updateProfile() {
-        //TODO
-    }
-    public void deleteAccount() {
-        //TODO
-    }
+class User(
+    var userId: String,
+    var name: String,
+    var email: String,
+    var phoneNumber: String,
+    var dateOfBirth: Date,
+    var passwordHash: String,
+    var trips: List<Trip>
+) {
+    fun register(email: String, password: String) {}
+    fun updateProfile() {}
+    fun deleteAccount() {}
 }
