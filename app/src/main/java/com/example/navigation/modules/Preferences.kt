@@ -1,14 +1,12 @@
-package com.example.navigation.modules;
+package com.example.navigation.modules
 
-public class Preferences {
-    private String userId;
-    private boolean notificationsEnabled;
-    private String preferredLanguage;
-    private String theme;
-    private String currency;
-    private boolean darkMode;
-
-    public void updatePreferences() {
-        //TODO
-    }
+class Preferences(
+    var userId: String,
+    var notificationsEnabled: Boolean,
+    var preferredLanguage: String,
+    var theme: String,
+    var currency: String,
+    var darkMode: Boolean
+) {
+    fun updatePreferences() {}
 }

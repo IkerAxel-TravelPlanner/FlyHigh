@@ -1,15 +1,9 @@
-package com.example.navigation.modules;
+package com.example.navigation.modules
 
-import java.util.List;
+class AIRecommendations {
+    var recommendedActivities: List<ItineraryItem> = listOf()
+    var suggestedTrips: List<Trip> = listOf()
 
-public class AIRecommendations {
-    private List<ItineraryItem> recommendedActivities;
-    private List<Trip> suggestedTrips;
-
-    public void generateRecommendations(User user) {
-        //TODO
-    }
-    public void analyzePastTrips(User user) {
-        //TODO
-    }
+    fun generateRecommendations(user: User) {}
+    fun analyzePastTrips(user: User) {}
 }

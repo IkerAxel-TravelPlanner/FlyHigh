@@ -1,14 +1,11 @@
-package com.example.navigation.modules;
+package com.example.navigation.modules
 
-import java.util.Date;
+import java.util.Date
 
-// Image.java
-public class Image {
-    private String imageId;
-    private String url;
-    private Date uploadDate;
-
-    public void deleteImage() {
-        //TODO
-    }
+class Image(
+    var imageId: String,
+    var url: String,
+    var uploadDate: Date
+) {
+    fun deleteImage() {}
 }
