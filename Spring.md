@@ -16,5 +16,6 @@ T4 - Iker Infantes
 📅 Fechas Claves
 
 Inicio del Sprint: 17/02/2025
+
 Fin del Sprint: 02/03/2025
 
