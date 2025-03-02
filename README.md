@@ -1,5 +1,5 @@
 # Travel Planner App
-hola prueba soy el iker
+
 ## Descripción
 La aplicación Travel Planner es una herramienta diseñada para ayudar a los usuarios a planificar y gestionar sus viajes. Permite crear itinerarios, almacenar lugares de interés, visualizar información sobre el viaje y mucho más.
 
