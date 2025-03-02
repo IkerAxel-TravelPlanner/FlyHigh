@@ -67,7 +67,7 @@ El sistema está diseñado de manera que cada entidad pueda mapearse fácilmente
 
 ## Estructura del Proyecto en Android Studio
 
-**Estructura MVC - Model View Controller**
+**Estructura MVVM + Modular**
 - `Model`: Maneja los datos y la lógica de negocio (ej. clases como `User`, `Trip`).
 - `View`: Maneja la UI (archivos XML y Activities/Fragments en Kotlin o Java).
 - `Controller`: Maneja la interacción entre el modelo y la vista (ViewModels, Activities, Fragments).
