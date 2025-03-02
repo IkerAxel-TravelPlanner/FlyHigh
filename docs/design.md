@@ -73,8 +73,6 @@ El sistema está diseñado de manera que cada entidad pueda mapearse fácilmente
 - `Controller`: Maneja la interacción entre el modelo y la vista (ViewModels, Activities, Fragments).
 
 
-Para este proyecto, si ya se está utilizando Kotlin para las pantallas y se tiene un `NavGraph.kt`, la estructura **MVVM con una arquitectura modular** puede ser una buena opción para organizar mejor el código y facilitar la escalabilidad. 🚀
-
 ## Mejoras Futuras
 - **Gestión de Presupuesto**: Agregar seguimiento financiero a los viajes.
 - **Colaboradores**: Permitir que varios usuarios editen viajes.
