@@ -22,9 +22,9 @@ class TripRepository @Inject constructor() : TripInterface {
         val newTrip = Trip(tripId, name, startDate, endDate, destination, emptyList(), emptyList())
 
         // Simular la persistencia: agregar el nuevo viaje a la "base de datos" en memoria
-        val añadir = tripList.add(newTrip)
+        val isAdded = tripList.add(newTrip)
 
-        if (!añadir){
+        if (!isAdded){
             throw IllegalArgumentException("No se ha podido añadir el trip: $name")
         }
 
