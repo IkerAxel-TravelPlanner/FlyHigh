@@ -9,9 +9,5 @@ class User(
     var phoneNumber: String,
     var dateOfBirth: Date,
     var passwordHash: String,
-    var trips: List<Trip>
-) {
-    fun register(email: String, password: String) {}
-    fun updateProfile() {}
-    fun deleteAccount() {}
-}
+    //var trips: List<Trip>
+)

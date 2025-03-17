@@ -10,7 +10,7 @@ import javax.inject.Singleton
 @Singleton
 
 // Simulación de una "base de datos" en memoria
-private val ActivityList = mutableListOf<Trip>()
+private val ActivityList = mutableListOf<ItineraryItem>()
 
 
 class ItineraryItemRepository @Inject constructor() : ItineraryItemInterface {
@@ -29,7 +29,7 @@ class ItineraryItemRepository @Inject constructor() : ItineraryItemInterface {
         val isAdded = ActivityList.add(newActivity)
 
         if (!isAdded){
-            throw IllegalArgumentException("No se ha podido añadir el trip: $name")
+            throw IllegalArgumentException("No se ha podido añadir la Activity: $title")
         }
 
         // Retornar el viaje recién agregado
@@ -44,10 +44,22 @@ class ItineraryItemRepository @Inject constructor() : ItineraryItemInterface {
         endTime: Date,
         location: ExerciseRoute.Location
     ): ItineraryItem {
-        TODO("Not yet implemented")
+        val ActivitytoEdit = ActivityList.find { it.itemId == itemId }
+        ActivitytoEdit?.let {
+            it.title = title
+            it.description = description
+            it.startTime = startTime
+            it.endTime = endTime
+            it.location = location
+        // Aquí podrías actualizar otros campos, si fuera necesario.
+        }
+        return ActivitytoEdit ?: throw IllegalArgumentException("No se encontró la Activity con itemId: $itemId")
     }
 
     override fun deleteActivity(itemId: String) {
-        TODO("Not yet implemented")
+        val removed = ActivityList.removeIf { it.itemId == itemId }
+        if (!removed) {
+            throw IllegalArgumentException("No se encontró una Actividad con itemId: $itemId")
+        }
     }
 }
