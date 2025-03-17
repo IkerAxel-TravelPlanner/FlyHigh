@@ -9,18 +9,18 @@ Este documento explica cómo puedes colaborar con el desarrollo de la aplicació
 
 Antes de empezar, asegúrate de cumplir con los siguientes requisitos:
 
-- **Lenguaje:** Kotlin (para la lógica y UI)
-- **Arquitectura:** MVVM + Modular (NavGraph.kt ya implementado)
-- **Android Studio:** Versión más reciente recomendada
-- **Dependencias:** Se gestionan con Gradle
-- **Base de Datos:** Room (si se implementa en el futuro)
-- **Versionado:** Git + GitHub
+- **Lenguaje:** Kotlin (para la lógica y UI).
+- **Arquitectura:** MVVM + Modular (NavGraph ya implementado en `NavGraph.kt`).
+- **Android Studio:** Versión más reciente recomendada.
+- **Dependencias:** Se gestionan con Gradle.
+- **Base de Datos:** Room (prevista para futuras implementaciones).
+- **Versionado:** Git + GitHub.
 
 ---
 
 ## 🚀 Cómo Contribuir
 
-### 1⃣ Configurar el Proyecto
+### 1️⃣ Configurar el Proyecto
 1. **Fork** este repositorio en GitHub.
 2. Clona tu fork en tu máquina local:
    ```sh
@@ -32,10 +32,18 @@ Antes de empezar, asegúrate de cumplir con los siguientes requisitos:
    ./gradlew build
    ```
 
-### 2⃣ Crear una Nueva Funcionalidad o Solucionar un Bug
-1. Crea una rama para tu cambio:
+### 2️⃣ Trabajar en tu Rama
+Actualmente, el equipo trabaja con las siguientes ramas activas:
+- **`axel`** (Desarrollo de funcionalidades de Axel).
+- **`iker`** (Desarrollo de funcionalidades de Iker).
+- **`main`** (Versión estable del proyecto).
+
+#### Para contribuir:
+1. **Cambia a tu rama de trabajo** según corresponda:
    ```sh
-   git checkout -b feature-nombre-funcionalidad
+   git checkout axel
+   # o  
+   git checkout iker
    ```
 2. Implementa los cambios siguiendo la arquitectura **MVVM**.
 3. Realiza pruebas para asegurar que todo funciona correctamente.
@@ -43,9 +51,9 @@ Antes de empezar, asegúrate de cumplir con los siguientes requisitos:
    ```sh
    git commit -m "Agrega [descripción de la funcionalidad]"
    ```
-5. **Sube** tu rama al repositorio:
+5. **Sube** tu rama al repositorio remoto:
    ```sh
-   git push origin feature-nombre-funcionalidad
+   git push origin [nombre-de-tu-rama]
    ```
 6. Abre un **Pull Request** en GitHub explicando qué hiciste y por qué.
 
@@ -77,9 +85,9 @@ Si tienes ideas para mejorar la aplicación, abre un **Issue** con la etiqueta `
 
 ## ✅ Revisión y Aprobación
 1. Tu PR será revisado por los mantenedores.
-2. Si todo está bien, se aprobará y se hará **merge**.
+2. Si todo está bien, se aprobará y se hará **merge** en `main`.
 3. Si se necesitan cambios, recibirás comentarios en el PR.
 
 ---
 
-🎉 ¡Gracias por contribuir a **Travel Planner**!    
+🎉 ¡Gracias por contribuir a **Travel Planner**!  
