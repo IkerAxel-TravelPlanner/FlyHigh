@@ -1,6 +1,6 @@
-# 🛠 Contribuir al Proyecto Travel Planner
+# 🛠 Contribuir al Proyecto FlyHigh
 
-¡Gracias por tu interés en contribuir a **Travel Planner**! 🎉  
+¡Gracias por tu interés en contribuir a **FlyHigh**! 🎉  
 Este documento explica cómo puedes colaborar con el desarrollo de la aplicación.
 
 ---
