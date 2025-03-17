@@ -10,7 +10,4 @@ class ItineraryItem(
     var startTime: Date,
     var endTime: Date,
     var location: ExerciseRoute.Location
-) {
-    fun editItem() {}
-    fun deleteItem() {}
-}
+)
