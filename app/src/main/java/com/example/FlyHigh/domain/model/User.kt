@@ -9,5 +9,5 @@ class User(
     var phoneNumber: String,
     var dateOfBirth: Date,
     var passwordHash: String,
-    //var trips: List<Trip>
+    //  var trips: List<Trip>
 )
