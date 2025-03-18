@@ -7,7 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.navigation.ui.screens.*
+import com.example.navigation.ui.view.*
 
 @Composable
 fun NavGraph(navController: NavHostController) {
