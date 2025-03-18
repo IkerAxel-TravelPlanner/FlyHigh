@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.navigation"
+    namespace = "com.example.FlyHigh"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.navigation"
+        applicationId = "com.example.FlyHigh"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

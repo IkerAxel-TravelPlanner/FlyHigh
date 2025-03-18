@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Navigation"
+rootProject.name = "FlyHigh"
 include(":app")
  
