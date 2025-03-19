@@ -2,16 +2,18 @@ package com.example.FlyHigh.ui.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.R
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun LoginScreen2(navController: NavController) {
@@ -28,36 +30,42 @@ fun LoginScreen2(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 24.dp),  // Mayor padding
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Título de la pantalla
         Text(
-            text = "Login Screen",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 32.dp)
+            text = stringResource(id = R.string.login_title),
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(bottom = 32.dp),
+            color = Color(0xFF6200EE)  // Color morado
         )
 
         // Campo de texto para el nombre de usuario
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text(stringResource(id = R.string.username)) },
             modifier = Modifier.fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp))
+            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text)
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Campo de texto para la contraseña
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(id = R.string.password)) },
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
+            singleLine = true
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         // Botón de login con color consistente
         ElevatedButton(
@@ -72,10 +80,12 @@ fun LoginScreen2(navController: NavController) {
                 }
             },
             shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
         ) {
-            Text(text = "Login", color = Color.White)
+            Text(text = stringResource(id = R.string.login_button), color = Color.White)
         }
     }
 
@@ -83,11 +93,11 @@ fun LoginScreen2(navController: NavController) {
     if (showAlert) {
         AlertDialog(
             onDismissRequest = { showAlert = false },
-            title = { Text("Login Failed") },
-            text = { Text("Invalid username or password.") },
+            title = { Text(stringResource(id = R.string.login_failed_title)) },
+            text = { Text(stringResource(id = R.string.login_failed_message)) },
             confirmButton = {
                 Button(onClick = { showAlert = false }) {
-                    Text("OK")
+                    Text(stringResource(id = R.string.ok_button))
                 }
             }
         )

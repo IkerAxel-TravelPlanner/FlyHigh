@@ -47,5 +47,11 @@ fun NavGraph(navController: NavHostController) {
 
         // Pantalla de Configuración de Idioma
         composable("language_settings") { LanguageSettingsScreen(navController, context = LocalContext.current) }
+
+        // Nueva pantalla de Itinerarios
+        composable("itinerary") { ItineraryScreen(navController) }
+
+        // Nueva pantalla de Explorar
+        composable("explore") { ExploreScreen(navController) }
     }
 }

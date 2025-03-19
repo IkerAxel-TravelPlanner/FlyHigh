@@ -1,5 +1,6 @@
 package com.example.FlyHigh.ui.view
 
+import android.app.Activity
 import android.content.Context
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
@@ -10,25 +11,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.FlyHigh.util.setLocale  // Importa el método setLocale
+import com.example.FlyHigh.R
+import com.example.LowTravel.utils.updateLocaleAndRecreate
+import com.example.LowTravel.data.SharedPrefsManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanguageSettingsScreen(navController: NavController, context: Context) {
-    var selectedLanguage by remember { mutableStateOf("") }
+    val sharedPrefsManager = remember {
+        SharedPrefsManager(context.getSharedPreferences("LowTravel_preferences", Context.MODE_PRIVATE))
+    }
 
-    // Usamos el color morado que ya se usa en la app
-    val primaryColor = Color(0xFF6200EE)  // El color morado
+    var selectedLanguage by remember { mutableStateOf(sharedPrefsManager.userLanguage ?: "en") }
+
+    val primaryColor = Color(0xFF6200EE) // Color morado
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Cambiar Idioma") },
+                title = { Text(stringResource(id = R.string.change_language)) },
                 navigationIcon = {
+                    // Icono de retroceso
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = primaryColor)
@@ -40,62 +49,36 @@ fun LanguageSettingsScreen(navController: NavController, context: Context) {
                     .padding(padding)
                     .fillMaxSize()
                     .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),  // Espaciado entre los botones
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Título
                 Text(
-                    text = "Selecciona un idioma",
+                    text = stringResource(id = R.string.change_language),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
-                // Botón para inglés
-                ElevatedButton(
-                    onClick = {
-                        setLocale(context, "en")  // Cambiar a inglés
-                        navController.popBackStack()  // Cerrar la pantalla de configuración
-                        navController.navigate("home")  // Recargar la pantalla de inicio para aplicar el cambio de idioma
-                    },
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
-                ) {
-                    Text("Inglés", color = Color.White)
-                }
+                val languages = listOf(
+                    "en" to stringResource(id = R.string.english),
+                    "es" to stringResource(id = R.string.spanish),
+                    "ca" to stringResource(id = R.string.catalan)
+                )
 
-                // Botón para español
-                ElevatedButton(
-                    onClick = {
-                        setLocale(context, "es")  // Cambiar a español
-                        navController.popBackStack()  // Cerrar la pantalla de configuración
-                        navController.navigate("home")  // Recargar la pantalla de inicio para aplicar el cambio de idioma
-                    },
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
-                ) {
-                    Text("Español", color = Color.White)
-                }
-
-                // Botón para portugués
-                ElevatedButton(
-                    onClick = {
-                        setLocale(context, "pt")  // Cambiar a portugués
-                        navController.popBackStack()  // Cerrar la pantalla de configuración
-                        navController.navigate("home")  // Recargar la pantalla de inicio para aplicar el cambio de idioma
-                    },
-                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
-                ) {
-                    Text("Portugués", color = Color.White)
+                languages.forEach { (code, label) ->
+                    ElevatedButton(
+                        onClick = {
+                            selectedLanguage = code
+                            sharedPrefsManager.userLanguage = code
+                            updateLocaleAndRecreate(context as Activity, code) // Reiniciar app con nuevo idioma
+                        },
+                        shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
+                    ) {
+                        Text(label, color = Color.White)
+                    }
                 }
             }
         }

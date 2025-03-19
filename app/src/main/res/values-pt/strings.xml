@@ -1,9 +1,0 @@
-<resources>
-    <string name="default_user">user1</string>
-    <string name="default_pass">123456</string>
-    <string name="app_name">Meu Aplicativo</string>
-    <string name="change_language">Mudar Idioma</string>
-    <string name="english">Inglês</string>
-    <string name="spanish">Espanhol</string>
-    <string name="portuguese">Português</string>
-</resources>
