@@ -1,0 +1,99 @@
+<resources>
+    <string name="default_user">user1</string>
+    <string name="default_pass">123456</string>
+    <string name="app_name">FlyHigh</string>
+    <string name="about_us">Sobre Nosaltres</string>
+    <string name="information">Informació</string>
+    <string name="terms_conditions">Termes i Condicions</string>
+    <string name="privacy_policy">Política de Privacitat</string>
+    <string name="about_description">Aquesta aplicació ha estat creada amb l\'objectiu de facilitar la navegació i millorar l\'experiència de l'usuari. El nostre equip està compromès a proporcionar una plataforma fiable i segura.</string>
+    <string name="thank_you">Gràcies per confiar en nosaltres.</string>
+    <string name="home_title">Pantalla d\'Inici</string>
+    <string name="settings">Configuració</string>
+    <string name="about_icon">Qui som</string>
+    <string name="about">Qui som</string>
+    <string name="version">Versió</string>
+    <string name="profile">Perfil</string>
+    <string name="settings_icon">Configuració</string>
+    <string name="welcome_title">Benvingut a l\'App</string>
+    <string name="example_image">Imatge d\'exemple</string>
+    <string name="explore_content">Explora el que tenim per a tu</string>
+    <string name="explore_button">Explorar</string>
+    <string name="news_content">Mantén-te al dia amb les últimes notícies</string>
+    <string name="news_button">Veure Notícies</string>
+    <string name="itinerary_title">Itineraris</string>
+    <string name="view_itinerary">Veure Itineraris</string>
+    <string name="explore_title">Explorar</string>
+    <string name="fab_settings">Configuració</string>
+    <string name="profile_icon">Perfil</string>
+    <string name="version_icon">Versió</string>
+    <string name="change_language">Canviar idioma</string>
+    <string name="english">Anglès</string>
+    <string name="spanish">Espanyol</string>
+    <string name="catalan">Català</string>
+    <string name="back">Enrere</string>
+    <string name="login_title">Pantalla d\'inici de sessió</string>
+    <string name="username">Nom d\'usuari</string>
+    <string name="password">Contrasenya</string>
+    <string name="login_button">Iniciar sessió</string>
+    <string name="login_failed_title">Error d\'inici de sessió</string>
+    <string name="login_failed_message">Nom d\'usuari o contrasenya incorrectes.</string>
+    <string name="ok_button">D\'acord</string>
+    <string name="privacy_policy_title">Política de Privacitat</string>
+    <string name="last_updated">Data de darrera actualització: 1 de març de 2025</string>
+    <string name="information_collected_title">1. Informació que Recopilem</string>
+    <string name="information_collected_content">Recopilem la següent informació personal per proporcionar-li una experiència millorada dins de la nostra aplicació:</string>
+    <string name="usage_data_title">- Dades d\'ús:</string>
+    <string name="usage_data_content">Recopilem informació sobre com interactua amb l\'aplicació, com el tipus de dispositiu, sistema operatiu i pàgines visitades.</string>
+    <string name="usage_purpose_title">2. Ús de la Informació</string>
+    <string name="usage_purpose_content">Utilitzem la informació recopilada per als següents fins:</string>
+    <string name="sharing_info_title">3. Compartir Informació</string>
+    <string name="sharing_info_content">No compartim la seva informació personal amb tercers, excepte en els següents casos:</string>
+    <string name="security_title">4. Seguretat de la Informació</string>
+    <string name="security_content">Prenem mesures raonables per protegir la seva informació personal, inclòs l\'ús de tecnologies de xifratge. No obstant això, no podem garantir la seguretat absoluta de les seves dades en tot moment.</string>
+    <string name="rights_title">5. Els Seus Drets</string>
+    <string name="rights_content">Té el dret de:</string>
+    <string name="cookies_title">6. Cookies i Tecnologies Similars</string>
+    <string name="cookies_content">Utilitzem cookies per millorar l\'experiència de l\'usuari. Pot configurar el seu dispositiu per rebutjar les cookies, però això podria afectar el funcionament d'algunes funcionalitats.</string>
+    <string name="third_party_links_title">7. Enllaços a Llocs de Tercers</string>
+    <string name="third_party_links_content">La nostra aplicació pot contenir enllaços a llocs web de tercers. No som responsables de la privadesa o el contingut d\'aquests llocs.</string>
+    <string name="privacy_policy_changes_title">8. Canvis a la Política de Privacitat</string>
+    <string name="privacy_policy_changes_content">Podem actualitzar aquesta Política de Privacitat en qualsevol moment. Els canvis es notificaran a través de l\'aplicació.</string>
+    <string name="contact_title">9. Contacte</string>
+    <string name="contact_content">Si té alguna pregunta, contacti amb nosaltres a través de [correu electrònic o formulari de contacte].</string>
+    <string name="back_button">Tornar</string>
+    <string name="profile_title">Perfil d\'usuari</string>
+    <string name="profile_name">Nom: %1$s</string>
+    <string name="profile_email">Correu: %1$s</string>
+    <string name="profile_bio">Biografia: %1$s</string>
+    <string name="edit_profile">Editar perfil</string>
+    <string name="back_to_home">Tornar a l\'inici</string>
+    <string name="settings_title">Configuració</string>
+    <string name="notifications">Notificacions</string>
+    <string name="security_privacy">Seguretat i privadesa</string>
+    <string name="advanced_settings">Ajustos avançats</string>
+    <string name="terms_and_conditions_title">Termes i Condicions</string>
+    <string name="terms_and_conditions_content">
+        Data de l\'última actualització: 1 de març de 2025\n\n
+        1. Acceptació dels Termes\n
+        En utilitzar la nostra aplicació, accepteu complir amb aquests Termes i Condicions. Si no esteu d\'acord amb algun dels termes, us recomanem no utilitzar l\'aplicació.\n\n
+        2. Ús de l\'Aplicació\n
+        La nostra aplicació està destinada a usuaris majors de 13 anys. Us comprometeu a utilitzar l\'aplicació únicament amb fins lícits i d\'acord amb aquests termes.\n\n
+        3. Registre i Seguretat del Compte\n
+        Per accedir a certes funcionalitats de l\'aplicació, es pot demanar que creeu un compte. Sou responsables de mantenir la confidencialitat de les vostres credencials d\'inici de sessió i de totes les activitats realitzades al vostre compte. Si sospiteu de qualsevol ús no autoritzat del vostre compte, heu de notificar-nos immediatament.\n\n
+        4. Propietat Intel·lectual\n
+        Tot el contingut, disseny i tecnologia de l\'aplicació, incloent però no limitat a gràfics, text, logotips i programari, és propietat de [Nom de l\'Empresa] i està protegit per lleis de propietat intel·lectual. No podeu copiar, modificar ni distribuir aquest contingut sense la nostra autorització prèvia per escrit.\n\n
+        5. Limitació de Responsabilitat\n
+        No ens responsabilitzem de cap dany o pèrdua de dades, ni de cap perjudici directe o indirecte derivat de l'ús de l'aplicació. L'ús de l'aplicació és sota el vostre propi risc.\n\n
+        6. Modificacions\n
+        Ens reservem el dret de modificar aquests termes en qualsevol moment. Qualsevol canvi serà notificat a través de l'aplicació i estarà disponible en aquesta pàgina. L'ús continuat de l'aplicació després d'aquests canvis constitueix l'acceptació dels nous termes.\n\n
+        7. Terminació\n
+        Podem suspendre o finalitzar el vostre accés a l'aplicació si violau aquests termes, sense avís previ. Podeu cancel·lar el vostre compte en qualsevol moment.\n\n
+        8. Llei Aplicable\n
+        Aquests termes es regiran per i s'interpretaran d'acord amb les lleis del [país o regió]. Qualsevol disputa es resoldrà als tribunals competents d'aquesta jurisdicció.
+    </string>
+    <string name="app_info_title">Informació de l\'Aplicació</string>
+    <string name="release_date">Data de llançament: Febrer 2025</string>
+    <string name="developer">Desenvolupat per: FlyHigh Inc.</string>
+    <string name="more_info">Per a més informació, visita el nostre lloc web oficial.</string>
+</resources>

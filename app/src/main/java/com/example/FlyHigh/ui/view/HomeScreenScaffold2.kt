@@ -22,6 +22,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.R // Importante para las imágenes locales
+import androidx.compose.ui.res.stringResource
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenScaffold2(navController: NavController) {
@@ -31,43 +33,43 @@ fun HomeScreenScaffold2(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Home Screen") },
+                title = { Text(stringResource(id = R.string.home_title)) },
                 actions = {
                     Box {
                         IconButton(onClick = { showSettingsMenu = !showSettingsMenu }) {
-                            Icon(Icons.Outlined.Settings, contentDescription = "Settings")
+                            Icon(Icons.Outlined.Settings, contentDescription = stringResource(id = R.string.settings))
                         }
                         DropdownMenu(
                             expanded = showSettingsMenu,
                             onDismissRequest = { showSettingsMenu = false }
                         ) {
                             DropdownMenuItem(
-                                leadingIcon = { Icon(Icons.Filled.Info, contentDescription = "About Icon") },
-                                text = { Text("About") },
+                                leadingIcon = { Icon(Icons.Filled.Info, contentDescription = stringResource(id = R.string.about_icon)) },
+                                text = { Text(stringResource(id = R.string.about)) },
                                 onClick = {
                                     showSettingsMenu = false
                                     navController.navigate("about")
                                 }
                             )
                             DropdownMenuItem(
-                                leadingIcon = { Icon(Icons.Filled.Build, contentDescription = "Version Icon") },
-                                text = { Text("Version") },
+                                leadingIcon = { Icon(Icons.Filled.Build, contentDescription = stringResource(id = R.string.version_icon)) },
+                                text = { Text(stringResource(id = R.string.version)) },
                                 onClick = {
                                     showSettingsMenu = false
                                     navController.navigate("version")
                                 }
                             )
                             DropdownMenuItem(
-                                leadingIcon = { Icon(Icons.Filled.Person, contentDescription = "Profile Icon") },
-                                text = { Text("Profile") },
+                                leadingIcon = { Icon(Icons.Filled.Person, contentDescription = stringResource(id = R.string.profile_icon)) },
+                                text = { Text(stringResource(id = R.string.profile)) },
                                 onClick = {
                                     showSettingsMenu = false
                                     navController.navigate("profile")
                                 }
                             )
                             DropdownMenuItem(
-                                leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = "Settings Icon") },
-                                text = { Text("Settings") },
+                                leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = stringResource(id = R.string.settings_icon)) },
+                                text = { Text(stringResource(id = R.string.settings)) },
                                 onClick = {
                                     showSettingsMenu = false
                                     navController.navigate("settings")
@@ -81,26 +83,32 @@ fun HomeScreenScaffold2(navController: NavController) {
         bottomBar = {
             BottomNavigationBar(
                 selectedIndex = selectedIndex,
-                onItemSelected = { selectedIndex = it }
+                onItemSelected = { newIndex ->
+                    selectedIndex = newIndex
+                    when (newIndex) {
+                        0 -> navController.navigate("home")
+                        1 -> navController.navigate("explore")
+                        2 -> navController.navigate("news")
+                    }
+                }
             )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { /* Acción del FAB */ }) {
-                Icon(Icons.Filled.Settings, contentDescription = "FAB Icon")
+                Icon(Icons.Filled.Settings, contentDescription = stringResource(id = R.string.fab_settings))
             }
         },
         content = { padding ->
-            // Aquí envolvemos el contenido en un Column con desplazamiento
             Column(
                 modifier = Modifier
                     .padding(padding)
                     .fillMaxSize()
                     .padding(16.dp)
-                    .verticalScroll(rememberScrollState())  // Habilitamos el scroll
+                    .verticalScroll(rememberScrollState())
             ) {
                 // Título principal
                 Text(
-                    text = "Bienvenido a la App",
+                    text = stringResource(id = R.string.welcome_title),
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -116,14 +124,13 @@ fun HomeScreenScaffold2(navController: NavController) {
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        // Imagen de ejemplo
                         Image(
-                            painter = painterResource(id = R.drawable.imagen1), // Cambia esto por tu imagen
-                            contentDescription = "Imagen de ejemplo",
+                            painter = painterResource(id = R.drawable.imagen1),
+                            contentDescription = stringResource(id = R.string.example_image),
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
-                            text = "Explora lo que tenemos para ti",
+                            text = stringResource(id = R.string.explore_content),
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -132,9 +139,9 @@ fun HomeScreenScaffold2(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Azul
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
                         ) {
-                            Text(text = "Explorar")
+                            Text(text = stringResource(id = R.string.explore_button))
                         }
                     }
                 }
@@ -150,14 +157,13 @@ fun HomeScreenScaffold2(navController: NavController) {
                     Column(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        // Otra imagen de ejemplo
                         Image(
-                            painter = painterResource(id = R.drawable.imagen7), // Cambia esto por tu imagen
-                            contentDescription = "Imagen de ejemplo",
+                            painter = painterResource(id = R.drawable.imagen7),
+                            contentDescription = stringResource(id = R.string.example_image),
                             modifier = Modifier.fillMaxWidth()
                         )
                         Text(
-                            text = "Mantente al día con las últimas noticias",
+                            text = stringResource(id = R.string.news_content),
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -166,9 +172,9 @@ fun HomeScreenScaffold2(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Azul
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
                         ) {
-                            Text(text = "Ver Noticias")
+                            Text(text = stringResource(id = R.string.news_button))
                         }
                     }
                 }
@@ -177,6 +183,7 @@ fun HomeScreenScaffold2(navController: NavController) {
     )
 }
 
+// Componente para la barra de navegación inferior
 @Composable
 fun BottomNavigationBar(
     selectedIndex: Int,

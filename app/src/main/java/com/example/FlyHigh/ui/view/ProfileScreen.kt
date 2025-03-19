@@ -7,8 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.FlyHigh.R
 
 @Composable
 fun ProfileScreen(navController: NavController, userId: Int?) {
@@ -24,28 +26,28 @@ fun ProfileScreen(navController: NavController, userId: Int?) {
     ) {
         // Título de la pantalla
         Text(
-            text = "Perfil de Usuario",
+            text = stringResource(id = R.string.profile_title),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         // Mostrar nombre de usuario
         Text(
-            text = "Nombre: $username",
+            text = stringResource(id = R.string.profile_name, username),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         // Mostrar correo electrónico
         Text(
-            text = "Correo: $email",
+            text = stringResource(id = R.string.profile_email, email),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         // Mostrar biografía
         Text(
-            text = "Biografía: $bio",
+            text = stringResource(id = R.string.profile_bio, bio),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -57,7 +59,7 @@ fun ProfileScreen(navController: NavController, userId: Int?) {
             modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
         ) {
-            Text(text = "Editar Perfil", color = Color.White)
+            Text(text = stringResource(id = R.string.edit_profile), color = Color.White)
         }
 
         // Botón para volver a la pantalla de inicio
@@ -71,7 +73,7 @@ fun ProfileScreen(navController: NavController, userId: Int?) {
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
         ) {
-            Text(text = "Volver al Inicio", color = Color.White)
+            Text(text = stringResource(id = R.string.back_to_home), color = Color.White)
         }
     }
 }

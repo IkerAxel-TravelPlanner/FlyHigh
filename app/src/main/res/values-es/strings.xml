@@ -1,9 +1,99 @@
 <resources>
     <string name="default_user">user1</string>
     <string name="default_pass">123456</string>
-    <string name="app_name">Mi Aplicación</string>
+    <string name="app_name">FlyHigh</string>
     <string name="change_language">Cambiar Idioma</string>
     <string name="english">Inglés</string>
     <string name="spanish">Español</string>
-    <string name="portuguese">Portugués</string>
+    <string name="catalan">Catalan</string>
+    <string name="about_us">Acerca de Nosotros</string>
+    <string name="information">Información</string>
+    <string name="terms_conditions">Términos y Condiciones</string>
+    <string name="privacy_policy">Política de Privacidad</string>
+    <string name="about_description">Esta aplicación ha sido creada con el objetivo de facilitar la navegación y mejorar la experiencia de usuario. Nuestro equipo está comprometido en proporcionar una plataforma confiable y segura.</string>
+    <string name="thank_you">Gracias por confiar en nosotros.</string>
+    <string name="back">Volver</string>
+    <string name="home_title">Pantalla Principal</string>
+    <string name="settings">Configuración</string>
+    <string name="about_icon">Acerca de</string>
+    <string name="about">Acerca de</string>
+    <string name="version">Versión</string>
+    <string name="profile">Perfil</string>
+    <string name="settings_icon">Configuración</string>
+    <string name="welcome_title">Bienvenido a la App</string>
+    <string name="example_image">Imagen de ejemplo</string>
+    <string name="explore_content">Explora lo que tenemos para ti</string>
+    <string name="explore_button">Explorar</string>
+    <string name="news_content">Mantente al día con las últimas noticias</string>
+    <string name="news_button">Ver Noticias</string>
+    <string name="itinerary_title">Itinerarios</string>
+    <string name="view_itinerary">Ver Itinerarios</string>
+    <string name="explore_title">Explorar</string>
+    <string name="fab_settings">Ajustes</string>
+    <string name="profile_icon">Perfil</string>
+    <string name="version_icon">Versión</string>
+    <string name="login_title">Pantalla de Login</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="login_failed_title">Error de Login</string>
+    <string name="login_failed_message">Usuario o contraseña inválidos.</string>
+    <string name="ok_button">Aceptar</string>
+    <string name="privacy_policy_title">Política de Privacidad</string>
+    <string name="last_updated">Fecha de última actualización: 1 de marzo de 2025</string>
+    <string name="information_collected_title">1. Información que Recopilamos</string>
+    <string name="information_collected_content">Recopilamos la siguiente información personal para proporcionarle una experiencia mejorada dentro de nuestra aplicación:</string>
+    <string name="usage_data_title">- Datos de uso:</string>
+    <string name="usage_data_content">Recopilamos información sobre cómo interactúa con la aplicación, como el tipo de dispositivo, sistema operativo, y páginas visitadas.</string>
+    <string name="usage_purpose_title">2. Uso de la Información</string>
+    <string name="usage_purpose_content">Utilizamos la información recopilada para los siguientes fines:</string>
+    <string name="sharing_info_title">3. Compartir Información</string>
+    <string name="sharing_info_content">No compartimos su información personal con terceros, excepto en los siguientes casos:</string>
+    <string name="security_title">4. Seguridad de la Información</string>
+    <string name="security_content">Tomamos medidas razonables para proteger su información personal, incluyendo el uso de tecnologías de encriptación. Sin embargo, no podemos garantizar la seguridad absoluta de sus datos en todo momento.</string>
+    <string name="rights_title">5. Sus Derechos</string>
+    <string name="rights_content">Usted tiene derecho a:</string>
+    <string name="cookies_title">6. Cookies y Tecnologías Similares</string>
+    <string name="cookies_content">Utilizamos cookies para mejorar la experiencia del usuario. Puede configurar su dispositivo para rechazar las cookies, pero esto podría afectar el funcionamiento de algunas características.</string>
+    <string name="third_party_links_title">7. Enlaces a Sitios de Terceros</string>
+    <string name="third_party_links_content">Nuestra aplicación puede contener enlaces a sitios web de terceros. No somos responsables de la privacidad o el contenido de esos sitios.</string>
+    <string name="privacy_policy_changes_title">8. Cambios en la Política de Privacidad</string>
+    <string name="privacy_policy_changes_content">Podemos actualizar esta Política de Privacidad en cualquier momento. Los cambios serán notificados a través de la aplicación.</string>
+    <string name="contact_title">9. Contacto</string>
+    <string name="contact_content">Si tiene alguna pregunta, contáctenos a través de [correo electrónico o formulario de contacto].</string>
+    <string name="back_button">Volver</string>
+    <string name="profile_title">Perfil de Usuario</string>
+    <string name="profile_name">Nombre: %1$s</string>
+    <string name="profile_email">Correo: %1$s</string>
+    <string name="profile_bio">Biografía: %1$s</string>
+    <string name="edit_profile">Editar Perfil</string>
+    <string name="back_to_home">Volver al Inicio</string>
+    <string name="settings_title">Configuración</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="security_privacy">Seguridad y Privacidad</string>
+    <string name="advanced_settings">Ajustes Avanzados</string>
+    <string name="terms_and_conditions_title">Términos y Condiciones</string>
+    <string name="terms_and_conditions_content">
+        Fecha de última actualización: 1 de marzo de 2025\n\n
+        1. Aceptación de los Términos\n
+        Al utilizar nuestra aplicación, usted acepta cumplir con estos Términos y Condiciones. Si no está de acuerdo con alguno de los términos, le recomendamos no utilizar la aplicación.\n\n
+        2. Uso de la Aplicación\n
+        Nuestra aplicación está destinada a usuarios mayores de 13 años. Usted se compromete a usar la aplicación únicamente con fines lícitos y de acuerdo con estos términos.\n\n
+        3. Registro y Seguridad de la Cuenta\n
+        Para acceder a ciertas funciones de la aplicación, se le puede pedir que cree una cuenta. Usted es responsable de mantener la confidencialidad de sus credenciales de inicio de sesión y de todas las actividades realizadas en su cuenta. Si sospecha de cualquier uso no autorizado de su cuenta, debe notificarnos de inmediato.\n\n
+        4. Propiedad Intelectual\n
+        Todo el contenido, diseño y tecnología de la aplicación, incluyendo pero no limitado a gráficos, texto, logos y software, es propiedad de [Nombre de la Empresa] y está protegido por leyes de propiedad intelectual. No puede copiar, modificar o distribuir este contenido sin nuestra autorización previa por escrito.\n\n
+        5. Limitación de Responsabilidad\n
+        No nos hacemos responsables de ningún daño o pérdida de datos, ni de ningún perjuicio directo o indirecto derivado del uso de la aplicación. El uso de la aplicación es bajo su propio riesgo.\n\n
+        6. Modificaciones\n
+        Nos reservamos el derecho de modificar estos términos en cualquier momento. Cualquier cambio será notificado a través de la aplicación y estará disponible en esta página. El uso continuado de la aplicación tras dichos cambios constituye su aceptación de los nuevos términos.\n\n
+        7. Terminación\n
+        Podemos suspender o finalizar su acceso a la aplicación si violara estos términos, sin previo aviso. Usted puede cancelar su cuenta en cualquier momento.\n\n
+        8. Ley Aplicable\n
+        Estos términos se regirán e interpretarán de acuerdo con las leyes del [país o región]. Cualquier disputa será resuelta en los tribunales competentes de dicha jurisdicción.
+    </string>
+    <string name="app_info_title">Información de la Aplicación</string>
+    <string name="release_date">Fecha de lanzamiento: Febrero 2025</string>
+    <string name="developer">Desarrollado por: FlyHigh Inc.</string>
+    <string name="more_info">Para más información, visita nuestro sitio web oficial.</string>
 </resources>
