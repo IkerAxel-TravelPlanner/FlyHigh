@@ -87,8 +87,8 @@ fun SettingsScreen(navController: NavHostController, themeViewModel: ThemeViewMo
             Text(text = stringResource(id = R.string.change_theme))
 
             Switch(
-                checked = themeViewModel.isDarkTheme.value, // Usando la variable del ViewModel
-                onCheckedChange = { themeViewModel.toggleTheme() } // Cambiar el tema al hacer click
+                checked = themeViewModel.isDarkTheme.value, // El estado del tema se obtiene desde el ViewModel
+                onCheckedChange = { themeViewModel.toggleTheme() } // Al cambiar, se alterna el valor
             )
         }
     }
