@@ -58,12 +58,14 @@ fun LanguageSettingsScreen(navController: NavController, context: Context) {
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
 
+                // Lista de idiomas
                 val languages = listOf(
                     "en" to stringResource(id = R.string.english),
                     "es" to stringResource(id = R.string.spanish),
                     "ca" to stringResource(id = R.string.catalan)
                 )
 
+                // Crear los botones para cada idioma
                 languages.forEach { (code, label) ->
                     ElevatedButton(
                         onClick = {
