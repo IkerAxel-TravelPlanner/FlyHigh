@@ -11,17 +11,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import com.example.FlyHigh.ui.viewmodel.Itinerary
-import com.example.FlyHigh.ui.viewmodel.ItineraryViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditItineraryScreen(navController: NavController, viewModel: ItineraryViewModel, itineraryId: String) {
-    // **Buscar el itinerario en la lista**
-    val itinerary = remember { viewModel.itineraries.find { it.id == itineraryId } }
+fun EditItineraryScreen(
+    navController: NavController,
+    viewModel: TravelViewModel,
+    viajeId: String,
+    itineraryId: String
+) {
+    // **Buscar el viaje y el itinerario correspondiente**
+    val viaje = remember { viewModel.travels.find { it.id == viajeId } }
+    val itinerary = remember { viaje?.itineraries?.find { it.id == itineraryId } }
 
     // **Si no se encuentra, salir de la pantalla**
-    if (itinerary == null) {
+    if (viaje == null || itinerary == null) {
         LaunchedEffect(Unit) {
             navController.popBackStack()
         }
@@ -54,7 +60,7 @@ fun EditItineraryScreen(navController: NavController, viewModel: ItineraryViewMo
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Nombre del viaje") },
+                label = { Text("Nombre del Itinerario") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
@@ -73,7 +79,7 @@ fun EditItineraryScreen(navController: NavController, viewModel: ItineraryViewMo
             Button(
                 onClick = {
                     if (name.isNotBlank() && description.isNotBlank()) {
-                        viewModel.updateItinerary(itinerary.copy(name = name, description = description))
+                        viewModel.updateItinerary(viajeId, itinerary.copy(name = name, description = description))
                         navController.popBackStack()
                     }
                 },

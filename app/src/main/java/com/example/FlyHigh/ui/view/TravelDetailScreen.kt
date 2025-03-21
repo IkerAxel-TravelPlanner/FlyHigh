@@ -12,12 +12,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.FlyHigh.ui.viewmodel.ItineraryViewModel
-import com.example.FlyHigh.ui.viewmodel.Travel
+import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TravelDetailScreen(navController: NavController, viewModel: ItineraryViewModel, viajeId: String) {
+fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel, viajeId: String) {
     val viaje = remember { viewModel.travels.find { it.id == viajeId } }
 
     if (viaje == null) {

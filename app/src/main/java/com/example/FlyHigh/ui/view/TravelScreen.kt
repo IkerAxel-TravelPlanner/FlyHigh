@@ -12,8 +12,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.FlyHigh.ui.viewmodel.Travel
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import com.example.FlyHigh.ui.viewmodel.Travel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +32,7 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("createTravel") }) {
+            FloatingActionButton(onClick = { navController.navigate("createViaje") }) {
                 Icon(Icons.Filled.Add, contentDescription = "Añadir Viaje")
             }
         }
@@ -57,7 +57,7 @@ fun TravelItem(travel: Travel, navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navController.navigate("editTravel/${travel.id}") },
+            .clickable { navController.navigate("viaje/${travel.id}/itinerarios") },
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
