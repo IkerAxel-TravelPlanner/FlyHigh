@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -43,7 +44,11 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
             } else {
                 LazyColumn {
                     items(travels) { travel ->
-                        TravelItem(travel, navController)
+                        TravelItem(
+                            travel = travel,
+                            navController = navController,
+                            onDeleteTravel = { viewModel.deleteTravel(travel.id) } // Aquí llamamos a deleteTravel
+                        )
                     }
                 }
             }
@@ -52,7 +57,7 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
 }
 
 @Composable
-fun TravelItem(travel: Travel, navController: NavController) {
+fun TravelItem(travel: Travel, navController: NavController, onDeleteTravel: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,6 +70,11 @@ fun TravelItem(travel: Travel, navController: NavController) {
             Text(text = travel.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = travel.description, style = MaterialTheme.typography.bodyMedium)
+
+            // Botón de eliminar viaje
+            IconButton(onClick = { onDeleteTravel() }) {
+                Icon(Icons.Filled.Delete, contentDescription = "Eliminar Viaje")
+            }
         }
     }
 }

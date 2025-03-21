@@ -61,6 +61,30 @@ fun HomeScreenScaffold2(navController: NavController) {
                                 navController.navigate("profile")
                             }
                         )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Filled.Language, contentDescription = null) },
+                            text = { Text(stringResource(id = R.string.change_language)) },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate("language_settings")
+                            }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                            text = { Text(stringResource(id = R.string.settings)) },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate("settings")
+                            }
+                        )
+                        DropdownMenuItem(
+                            leadingIcon = { Icon(Icons.Filled.Info, contentDescription = null) },
+                            text = { Text(stringResource(id = R.string.version)) },
+                            onClick = {
+                                showSettingsMenu = false
+                                navController.navigate("version")
+                            }
+                        )
                     }
                 }
             )
@@ -69,23 +93,25 @@ fun HomeScreenScaffold2(navController: NavController) {
             BottomNavigationBar(selectedIndex) { newIndex ->
                 selectedIndex = newIndex
                 when (newIndex) {
-                    0 -> navController.navigate("home")
+                    0 -> navController.navigate("home") // Evita navegar repetidamente a la misma ruta
                     1 -> navController.navigate("viajes")
                     2 -> navController.navigate("explore")
                 }
             }
         }
     ) { padding ->
+
+        // Aquí aplicamos directamente el color de fondo en el Modifier de la columna
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.background)  // Aplico el color de fondo directamente aquí
         ) {
             // Encabezado con imagen
             Image(
-                painter = painterResource(id = R.drawable.imagen1), // Cambia por una imagen real
+                painter = painterResource(id = R.drawable.imagen1),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,21 +156,20 @@ fun HomeScreenScaffold2(navController: NavController) {
             FeatureCard(
                 title = "Descubre lugares increíbles",
                 description = "Explora destinos únicos y encuentra tu próximo destino soñado.",
-                imageRes = R.drawable.imagen1, // Imagen de exploración
+                imageRes = R.drawable.imagen1,
                 onClick = { navController.navigate("explore") }
             )
 
             FeatureCard(
                 title = "Gestiona tus itinerarios",
                 description = "Organiza tus actividades y haz que cada viaje sea perfecto.",
-                imageRes = R.drawable.imagen1, // Imagen de itinerarios
+                imageRes = R.drawable.imagen7,
                 onClick = { navController.navigate("viajes") }
             )
         }
     }
 }
 
-// 📌 Componente para Tarjetas de Acceso Rápido
 @Composable
 fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
     Card(
@@ -167,7 +192,6 @@ fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.Ima
     }
 }
 
-// 📌 Componente para Tarjetas Destacadas con Imagen
 @Composable
 fun FeatureCard(title: String, description: String, imageRes: Int, onClick: () -> Unit) {
     Card(
@@ -193,7 +217,6 @@ fun FeatureCard(title: String, description: String, imageRes: Int, onClick: () -
     }
 }
 
-// 📌 Barra de navegación inferior
 @Composable
 fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar {

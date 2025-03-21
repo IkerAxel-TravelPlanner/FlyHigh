@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -43,7 +44,7 @@ fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, vi
             } else {
                 LazyColumn {
                     items(itineraries.size) { index ->
-                        ItineraryItem(itineraries[index], navController, viajeId)
+                        ItineraryItem(itineraries[index], navController, viajeId, viewModel)
                     }
                 }
             }
@@ -52,7 +53,7 @@ fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, vi
 }
 
 @Composable
-fun ItineraryItem(itinerary: Itinerary, navController: NavController, viajeId: String) {
+fun ItineraryItem(itinerary: Itinerary, navController: NavController, viajeId: String, viewModel: TravelViewModel) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,6 +66,11 @@ fun ItineraryItem(itinerary: Itinerary, navController: NavController, viajeId: S
             Text(text = itinerary.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = itinerary.description, style = MaterialTheme.typography.bodyMedium)
+
+            // Botón de eliminar itinerario
+            IconButton(onClick = { viewModel.deleteItinerary(viajeId, itinerary.id) }) {
+                Icon(Icons.Filled.Delete, contentDescription = "Eliminar Itinerario")
+            }
         }
     }
 }

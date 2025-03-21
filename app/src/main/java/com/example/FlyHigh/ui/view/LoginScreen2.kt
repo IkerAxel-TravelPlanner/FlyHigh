@@ -2,6 +2,7 @@ package com.example.FlyHigh.ui.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -67,7 +68,7 @@ fun LoginScreen2(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botón de login con color consistente
+        // Botón de login con estilo atractivo
         ElevatedButton(
             onClick = {
                 if (username == defaultUser && password == defaultPass) {
@@ -79,11 +80,11 @@ fun LoginScreen2(navController: NavController) {
                     showAlert = true
                 }
             },
-            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+            shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color azul
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)) // Color consistente
         ) {
             Text(text = stringResource(id = R.string.login_button), color = Color.White)
         }

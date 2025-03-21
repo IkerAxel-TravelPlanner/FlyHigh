@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -60,6 +61,11 @@ fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel,
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(text = itinerary.name, style = MaterialTheme.typography.bodyLarge)
                             Text(text = itinerary.description, style = MaterialTheme.typography.bodyMedium)
+
+                            // Botón de eliminar itinerario
+                            IconButton(onClick = { viewModel.deleteItinerary(viaje.id, itinerary.id) }) {
+                                Icon(Icons.Filled.Delete, contentDescription = "Eliminar Itinerario")
+                            }
                         }
                     }
                 }

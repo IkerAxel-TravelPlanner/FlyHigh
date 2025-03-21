@@ -96,4 +96,15 @@
     <string name="release_date">Release Date: February 2025</string>
     <string name="developer">Developed by: FlyHigh Inc.</string>
     <string name="more_info">For more information, visit our official website.</string>
+    <string name="general_settings" />
+    <string name="version_info" />
+    <string name="advanced_settings_description">Configure advanced settings for your account and app.</string>
+    <string name="configure_advanced_settings">Configure Advanced Settings</string>
+    <string name="security_privacy_description">Manage your security and privacy settings here.</string>
+    <string name="configure_security">Configure Security</string>
+    <string name="notifications_description">Configure your notification preferences here.</string>
+    <string name="configure_notifications">Configure Notifications</string>
+    <string name="change_theme">Change Theme</string>
+    <string name="light_theme">Light Theme</string>
+    <string name="dark_theme">Dark Theme</string>
 </resources>

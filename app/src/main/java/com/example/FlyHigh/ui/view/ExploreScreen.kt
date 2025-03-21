@@ -83,7 +83,7 @@ fun ExploreScreen(navController: NavController) {
             ExploreCard(
                 title = "Lugares Icónicos",
                 description = "Explora las maravillas del mundo.",
-                imageRes = R.drawable.imagen1, // Reemplaza con una imagen adecuada
+                imageRes = R.drawable.imagen7, // Reemplaza con una imagen adecuada
                 onClick = { navController.navigate("explore/places") },
                 modifier = Modifier.weight(1f)  // Correctamente aplicando weight
             )
