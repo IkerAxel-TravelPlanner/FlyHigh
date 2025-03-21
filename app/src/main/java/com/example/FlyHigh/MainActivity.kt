@@ -9,12 +9,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.navigation.compose.rememberNavController
 import com.example.FlyHigh.ui.theme.NavigationTheme
-import com.example.FlyHigh.ui.viewmodel.ItineraryViewModel
+import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import com.example.LowTravel.utils.applyPersistedLanguage
 
 class MainActivity : ComponentActivity() {
 
-    private val itineraryViewModel: ItineraryViewModel by viewModels()
+    private val TravelViewModel: TravelViewModel by viewModels()
 
     override fun attachBaseContext(newBase: Context?) {
         super.attachBaseContext(newBase?.let { applyPersistedLanguage(it) })
@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             NavigationTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
-                    NavGraph(navController = navController, itineraryViewModel = itineraryViewModel)
+                    NavGraph(navController = navController, travelViewModel = TravelViewModel)
                 }
             }
         }

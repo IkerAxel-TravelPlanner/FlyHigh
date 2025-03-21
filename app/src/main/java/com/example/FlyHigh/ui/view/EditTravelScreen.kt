@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.FlyHigh.ui.viewmodel.Travel
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

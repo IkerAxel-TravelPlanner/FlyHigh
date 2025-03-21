@@ -12,11 +12,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.FlyHigh.ui.viewmodel.ItineraryViewModel
+import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateItineraryScreen(navController: NavController, itineraryViewModel: ItineraryViewModel) {
+fun CreateItineraryScreen(
+    navController: NavController,
+    travelViewModel: TravelViewModel,
+    viajeId: String
+) {
     var itineraryName by remember { mutableStateOf(TextFieldValue("")) }
     var itineraryDescription by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -33,7 +37,7 @@ fun CreateItineraryScreen(navController: NavController, itineraryViewModel: Itin
                     IconButton(
                         onClick = {
                             if (itineraryName.text.isNotEmpty()) {
-                                itineraryViewModel.addItinerary(itineraryName.text, itineraryDescription.text)
+                                travelViewModel.addItinerary(viajeId, itineraryName.text, itineraryDescription.text)
                                 navController.popBackStack()
                             }
                         }
@@ -51,7 +55,6 @@ fun CreateItineraryScreen(navController: NavController, itineraryViewModel: Itin
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Campo para el Nombre del Itinerario
                 OutlinedTextField(
                     value = itineraryName,
                     onValueChange = { itineraryName = it },
@@ -61,7 +64,6 @@ fun CreateItineraryScreen(navController: NavController, itineraryViewModel: Itin
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Campo para la Descripción del Itinerario
                 OutlinedTextField(
                     value = itineraryDescription,
                     onValueChange = { itineraryDescription = it },
@@ -71,11 +73,10 @@ fun CreateItineraryScreen(navController: NavController, itineraryViewModel: Itin
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Botón para Guardar el Itinerario
                 Button(
                     onClick = {
                         if (itineraryName.text.isNotEmpty()) {
-                            itineraryViewModel.addItinerary(itineraryName.text, itineraryDescription.text)
+                            travelViewModel.addItinerary(viajeId, itineraryName.text, itineraryDescription.text)
                             navController.popBackStack()
                         }
                     },
