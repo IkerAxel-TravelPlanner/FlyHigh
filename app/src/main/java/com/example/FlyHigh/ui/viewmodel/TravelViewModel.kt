@@ -1,3 +1,7 @@
+//No nos dejaba añadir la libreria de HILT, y hemos hecho un apaño, hemos implementado las funciones aquí directamente.
+
+
+
 package com.example.FlyHigh.ui.viewmodel
 
 import android.util.Log
