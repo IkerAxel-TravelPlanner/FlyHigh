@@ -1,5 +1,5 @@
 # Travel Planner - Diseño del Sistema
-
+![project_estructure_mermaid.png](project_estructure_mermaid.png)
 ## Resumen
 La aplicación **Travel Planner** está diseñada para ayudar a los usuarios a planificar viajes, gestionar itinerarios y colaborar con otros. Incluye funciones como recomendaciones de viajes, autenticación y servicios de mapas.
 
