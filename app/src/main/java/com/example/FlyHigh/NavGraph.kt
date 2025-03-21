@@ -35,6 +35,11 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
         composable("version") { VersionScreen(navController) }
         composable("language_settings") { LanguageSettingsScreen(navController, LocalContext.current) }
 
+        // 📌 NUEVAS PANTALLAS
+        composable("notifications") { NotificationsScreen(navController) }
+        composable("security_and_privacy") { SecurityAndPrivacyScreen(navController) }
+        composable("advanced_settings") { AdvancedSettingsScreen(navController) }
+
         // 📌 VIAJES
         composable("viajes") { TravelScreen(navController, travelViewModel) }
         composable("createViaje") { CreateTravelScreen(navController, travelViewModel) }

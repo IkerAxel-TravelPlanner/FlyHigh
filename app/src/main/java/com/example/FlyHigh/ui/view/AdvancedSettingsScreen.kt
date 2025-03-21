@@ -9,18 +9,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.FlyHigh.R
+import com.example.LowTravel.utils.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TermsAndConditionsScreen(navController: NavHostController) {
+fun AdvancedSettingsScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text(text = stringResource(id = R.string.terms_and_conditions_title)) },
+                title = { Text(text = stringResource(id = R.string.advanced_settings)) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Atrás")
@@ -34,33 +34,25 @@ fun TermsAndConditionsScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(24.dp)
-                .padding(top = padding.calculateTopPadding()), // Padding superior para evitar que el contenido se solape con la barra
+                .padding(top = padding.calculateTopPadding()), // Padding superior
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Título
             Text(
-                text = stringResource(id = R.string.terms_and_conditions_title),
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Contenido de los términos y condiciones
-            Text(
-                text = stringResource(id = R.string.terms_and_conditions_content),
+                text = stringResource(id = R.string.advanced_settings_description),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(bottom = 32.dp) // Padding inferior para separar de los botones
+                modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            // Botón "Volver"
+            // Aquí puedes agregar opciones de ajustes avanzados
             ElevatedButton(
-                onClick = { navController.popBackStack() },
+                onClick = { /* TODO: Implementar ajustes avanzados */ },
+                shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
-                shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)) // Bordes redondeados
+                    .padding(bottom = 16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
             ) {
-                Text(text = stringResource(id = R.string.back), color = Color.White) // Texto blanco
+                Text(text = stringResource(id = R.string.configure_advanced_settings), color = Color.White)
             }
         }
     }
