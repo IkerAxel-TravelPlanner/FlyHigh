@@ -7,4 +7,13 @@ interface ItineraryItemInterface {
         fun addActivity(itemId: String,title: String,description: String,startTime: Date,endTime: Date,location: ExerciseRoute.Location):ItineraryItem
         fun updateActivity(itemId: String,title: String,description: String,startTime: Date,endTime: Date,location: ExerciseRoute.Location):ItineraryItem
         fun deleteActivity(itemId: String)
+        fun ItineraryItem
+                        (
+                itemId: String,
+                tripId: String,
+                title: String,
+                description: Date,
+                startTime: Date,
+                endTime: ExerciseRoute.Location
+        ): ItineraryItem
 }
