@@ -1,9 +1,9 @@
 package com.example.FlyHigh.domain.model
 
 import ItineraryItemDTO
-import com.example.FlyHigh.domain.model.ItineraryItemDTO  // Corregir la ruta del paquete
+import com.example.FlyHigh.domain.model.ItineraryItem  // Corregir la ruta del paquete
 
-data class AIRecommendations {
+class AIRecommendations {
     var recommendedActivities: List<ItineraryItemDTO> = listOf()
     var suggestedTrips: List<Trip> = listOf()
 
