@@ -13,13 +13,24 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import com.example.FlyHigh.ui.view.ItineraryCard
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel, viajeId: String) {
-    val viaje = remember { viewModel.travels.find { it.id == viajeId } }
+    val viajeIdLong = viajeId.toLongOrNull() ?: -1L
 
+    // Obtener el viaje en tiempo real
+    val viaje by viewModel.getTripById(viajeIdLong).collectAsState(initial = null)
+
+    // Obtener los itinerarios en tiempo real
+    val itinerarios by viewModel.getItinerariesByTripId(viajeIdLong).collectAsState(initial = emptyList())
+
+    // Si el viaje no existe, regresar automáticamente
     if (viaje == null) {
         LaunchedEffect(Unit) { navController.popBackStack() }
         return
@@ -28,7 +39,7 @@ fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel,
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text(viaje.name) },
+                title = { Text(viaje?.title ?: "Detalles del Viaje") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
@@ -37,39 +48,50 @@ fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel,
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("viaje/${viaje.id}/createItinerario") }) {
+            FloatingActionButton(onClick = { navController.navigate("viaje/${viajeId}/createItinerario") }) {
                 Icon(Icons.Filled.Add, contentDescription = "Añadir itinerario")
             }
         }
     ) { padding ->
-        Column(modifier = Modifier.padding(padding).fillMaxSize().padding(16.dp)) {
-            Text(text = viaje.description, style = MaterialTheme.typography.bodyLarge)
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            Text(text = viaje?.description ?: "", style = MaterialTheme.typography.bodyLarge)
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(text = "Itinerarios:", style = MaterialTheme.typography.headlineSmall)
 
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(viaje.itineraries) { itinerary ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clickable { navController.navigate("viaje/${viaje.id}/itinerario/${itinerary.id}") },
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = itinerary.name, style = MaterialTheme.typography.bodyLarge)
-                            Text(text = itinerary.description, style = MaterialTheme.typography.bodyMedium)
-
-                            // Botón de eliminar itinerario
-                            IconButton(onClick = { viewModel.deleteItinerary(viaje.id, itinerary.id) }) {
-                                Icon(Icons.Filled.Delete, contentDescription = "Eliminar Itinerario")
-                            }
-                        }
-                    }
+                items(itinerarios) { itinerary ->
+                    ItineraryCard(itinerary, navController, viajeId, viewModel)
                 }
+            }}
+
+        }
+    }
+
+
+@Composable
+fun ItineraryCard(itinerary: ItineraryItemEntity, navController: NavController, viajeId: String, viewModel: TravelViewModel) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { navController.navigate("viaje/${viajeId}/itinerario/${itinerary.id}") },
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = itinerary.title, style = MaterialTheme.typography.bodyLarge)
+            Text(text = itinerary.description, style = MaterialTheme.typography.bodyMedium)
+
+            IconButton(onClick = { viewModel.deleteItinerary(itinerary.id) }) {
+                Icon(Icons.Filled.Delete, contentDescription = "Eliminar Itinerario")
             }
         }
     }
 }
+

@@ -1,15 +1,16 @@
 package com.example.FlyHigh.domain.model
 
-import androidx.room.*
-import java.util.*
+import java.util.Date
 
-@Entity(tableName = "trip_table")
 data class Trip(
-    @PrimaryKey @ColumnInfo(name = "trip_id") val tripId: String,
-    @ColumnInfo(name = "trip_name") var name: String,
-    @ColumnInfo(name = "start_date") var startDate: Date,
-    @ColumnInfo(name = "end_date") var endDate: Date,
-    @ColumnInfo(name = "destination") var destination: String,
-    @ColumnInfo(name = "photos") val photos: List<String> = listOf(),
-    val emptyList: List<Any>
+    val map: Map?,
+    val id: String,
+    val user: User?,
+    val destination: String,
+    val itineraries: List<ItineraryItem> = emptyList(),
+    val startDate: String,
+    val endDate: String,
+    val images: List<Image>?,
+    val aiRecommendations: List<AIRecommendations>?,
+    val imageURL: String = "https://example.com/default-trip-image.jpg"
 )

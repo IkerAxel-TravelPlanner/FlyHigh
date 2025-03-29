@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.kapt") // Plugin kapt agregado
 }
 
 android {
@@ -40,7 +41,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -66,27 +66,14 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-
     // Room dependencies
-    val roomVersion = "2.6.1" // Or the latest version
+    val roomVersion = "2.6.1" // O la última versión
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-
-    // optional - RxJava2 support for Room
+    kapt("androidx.room:room-compiler:$roomVersion")  // <-- Agregado
     implementation("androidx.room:room-rxjava2:$roomVersion")
-
-    // optional - RxJava3 support for Room
     implementation("androidx.room:room-rxjava3:$roomVersion")
-
-    // optional - Guava support for Room, including Optional and ListenableFuture
     implementation("androidx.room:room-guava:$roomVersion")
-
-    // optional - Test helpers
     testImplementation("androidx.room:room-testing:$roomVersion")
-
-    // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$roomVersion")
-
-
-
 }

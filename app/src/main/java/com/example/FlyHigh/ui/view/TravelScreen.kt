@@ -13,13 +13,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.FlyHigh.data.local.entity.TripEntity
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
-import com.example.FlyHigh.ui.viewmodel.Travel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
-    val travels by remember { derivedStateOf { viewModel.travels } }
+    // Obtener la lista de viajes en tiempo real
+    val travels by viewModel.getAllTrips().collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
@@ -47,7 +48,7 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
                         TravelItem(
                             travel = travel,
                             navController = navController,
-                            onDeleteTravel = { viewModel.deleteTravel(travel.id) } // Aquí llamamos a deleteTravel
+                            onDeleteTravel = { viewModel.deleteTravel(travel.id) }
                         )
                     }
                 }
@@ -57,7 +58,7 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
 }
 
 @Composable
-fun TravelItem(travel: Travel, navController: NavController, onDeleteTravel: () -> Unit) {
+fun TravelItem(travel: TripEntity, navController: NavController, onDeleteTravel: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -67,7 +68,7 @@ fun TravelItem(travel: Travel, navController: NavController, onDeleteTravel: () 
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = travel.name, style = MaterialTheme.typography.titleMedium)
+            Text(text = travel.title, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = travel.description, style = MaterialTheme.typography.bodyMedium)
 

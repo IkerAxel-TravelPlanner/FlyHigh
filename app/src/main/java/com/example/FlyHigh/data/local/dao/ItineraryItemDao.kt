@@ -6,17 +6,30 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.FlyHigh.domain.model.ItineraryItem
+import androidx.room.Update
+import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
 interface ItineraryItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItem(itineraryItem: ItineraryItem)
+    suspend fun insertItineraryItem(itineraryItem: ItineraryItemEntity)
 
-    @Query("SELECT * FROM itinerary_table WHERE trip_id = :tripId ORDER BY start_time ASC")
-    fun getItemsByTrip(tripId: String): LiveData<List<ItineraryItem>>
+    @Update
+    suspend fun updateItineraryItem(itineraryItem: ItineraryItemEntity)
 
-    @Delete
-    suspend fun deleteItem(itineraryItem: ItineraryItem)
+    @Query("DELETE FROM itinerary_items WHERE id = :itineraryId")
+    suspend fun deleteItineraryItemById(itineraryId: Long)
+
+    @Query("SELECT * FROM itinerary_items WHERE id = :itineraryId")
+    fun getItineraryItemById(itineraryId: Long): Flow<ItineraryItemEntity?>
+
+    @Query("SELECT * FROM itinerary_items WHERE tripId = :tripId")
+    fun getItinerariesByTripId(tripId: Long): Flow<List<ItineraryItemEntity>>
+
+    @Query("SELECT * FROM itinerary_items WHERE tripId = :tripId ORDER BY startTime ASC")
+    fun getItemsByTrip(tripId: Long): LiveData<List<ItineraryItemEntity>>
 }
+
+

@@ -12,21 +12,19 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
-import com.example.FlyHigh.ui.viewmodel.Itinerary
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditItineraryScreen(
     navController: NavController,
     viewModel: TravelViewModel,
-    viajeId: String,
-    itineraryId: String
+    viajeId: Long,
+    itineraryId: Long
 ) {
-    // **Buscar el viaje y el itinerario correspondiente**
-    val viaje = remember { viewModel.travels.find { it.id == viajeId } }
-    val itinerary = remember { viaje?.itineraries?.find { it.id == itineraryId } }
+    val viaje by viewModel.getTripById(viajeId).collectAsState(initial = null)
+    val itinerary by viewModel.getItineraryById(itineraryId).collectAsState(initial = null)
 
-    // **Si no se encuentra, salir de la pantalla**
     if (viaje == null || itinerary == null) {
         LaunchedEffect(Unit) {
             navController.popBackStack()
@@ -34,9 +32,8 @@ fun EditItineraryScreen(
         return
     }
 
-    // **Estados para los campos editables**
-    var name by remember { mutableStateOf(itinerary.name) }
-    var description by remember { mutableStateOf(itinerary.description) }
+    var name by remember { mutableStateOf(itinerary!!.title) }
+    var description by remember { mutableStateOf(itinerary!!.description) }
 
     Scaffold(
         topBar = {
@@ -79,7 +76,9 @@ fun EditItineraryScreen(
             Button(
                 onClick = {
                     if (name.isNotBlank() && description.isNotBlank()) {
-                        viewModel.updateItinerary(viajeId, itinerary.copy(name = name, description = description))
+                        viewModel.updateItinerary(
+                            itinerary!!.copy(title = name, description = description)
+                        )
                         navController.popBackStack()
                     }
                 },

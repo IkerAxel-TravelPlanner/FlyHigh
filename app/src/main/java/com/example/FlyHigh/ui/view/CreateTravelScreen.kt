@@ -13,12 +13,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateTravelScreen(navController: NavController, travelViewModel: TravelViewModel) {
     var travelName by remember { mutableStateOf(TextFieldValue("")) }
+    var travelDestination by remember { mutableStateOf(TextFieldValue("")) }
     var travelDescription by remember { mutableStateOf(TextFieldValue("")) }
+    var startDate by remember { mutableStateOf(Date()) }
+    var endDate by remember { mutableStateOf(Date()) }
+    var imageUrl by remember { mutableStateOf(TextFieldValue("")) }
 
     Scaffold(
         topBar = {
@@ -32,8 +37,15 @@ fun CreateTravelScreen(navController: NavController, travelViewModel: TravelView
                 actions = {
                     IconButton(
                         onClick = {
-                            if (travelName.text.isNotEmpty()) {
-                                travelViewModel.addTravel(travelName.text, travelDescription.text)
+                            if (travelName.text.isNotEmpty() && travelDestination.text.isNotEmpty()) {
+                                travelViewModel.addTravel(
+                                    travelName.text,
+                                    travelDestination.text,
+                                    startDate,
+                                    endDate,
+                                    travelDescription.text,
+                                    imageUrl.text.ifEmpty { null }
+                                )
                                 navController.popBackStack()
                             }
                         }
@@ -61,9 +73,27 @@ fun CreateTravelScreen(navController: NavController, travelViewModel: TravelView
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
+                    value = travelDestination,
+                    onValueChange = { travelDestination = it },
+                    label = { Text("Destino") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
                     value = travelDescription,
                     onValueChange = { travelDescription = it },
                     label = { Text("Descripción") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = imageUrl,
+                    onValueChange = { imageUrl = it },
+                    label = { Text("URL de la imagen (opcional)") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -71,8 +101,15 @@ fun CreateTravelScreen(navController: NavController, travelViewModel: TravelView
 
                 Button(
                     onClick = {
-                        if (travelName.text.isNotEmpty()) {
-                            travelViewModel.addTravel(travelName.text, travelDescription.text)
+                        if (travelName.text.isNotEmpty() && travelDestination.text.isNotEmpty()) {
+                            travelViewModel.addTravel(
+                                travelName.text,
+                                travelDestination.text,
+                                startDate,
+                                endDate,
+                                travelDescription.text,
+                                imageUrl.text.ifEmpty { null }
+                            )
                             navController.popBackStack()
                         }
                     },

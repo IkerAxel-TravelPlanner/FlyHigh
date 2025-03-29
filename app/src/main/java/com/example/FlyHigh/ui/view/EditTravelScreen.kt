@@ -16,7 +16,7 @@ import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTravelScreen(navController: NavController, viewModel: TravelViewModel, travelId: String) {
-    val travel = remember { viewModel.travels.find { it.id == travelId } }
+    val travel by viewModel.getTripById(travelId.toLongOrNull() ?: -1).collectAsState(initial = null)
 
     if (travel == null) {
         LaunchedEffect(Unit) {
@@ -25,8 +25,8 @@ fun EditTravelScreen(navController: NavController, viewModel: TravelViewModel, t
         return
     }
 
-    var name by remember { mutableStateOf(travel.name) }
-    var description by remember { mutableStateOf(travel.description) }
+    var name by remember { mutableStateOf(travel!!.title) }
+    var description by remember { mutableStateOf(travel!!.description) }
 
     Scaffold(
         topBar = {
@@ -69,7 +69,9 @@ fun EditTravelScreen(navController: NavController, viewModel: TravelViewModel, t
             Button(
                 onClick = {
                     if (name.isNotBlank() && description.isNotBlank()) {
-                        viewModel.updateTravel(travel.copy(name = name, description = description))
+                        viewModel.updateTravel(
+                            travel!!.copy(title = name, description = description)
+                        )
                         navController.popBackStack()
                     }
                 },
