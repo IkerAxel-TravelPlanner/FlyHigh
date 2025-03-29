@@ -1,34 +1,29 @@
-package com.example.FlyHigh.data.database
+package com.example.FlyHigh.data.local.database
 
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.FlyHigh.data.local.converters.DateConverter
+import com.example.FlyHigh.data.local.converters.MapConverter
+import com.example.FlyHigh.data.local.converters.UserConverter
+import com.example.FlyHigh.data.local.converters.ItineraryItemListConverter
+import com.example.FlyHigh.data.local.converters.ImageListConverter
+import com.example.FlyHigh.data.local.converters.AIRecommendationsListConverter
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
 import com.example.FlyHigh.data.local.dao.TripDao
-import android.content.Context
-import androidx.room.*
-import com.example.FlyHigh.data.Converters
-import com.example.FlyHigh.data.local.dao.UserDao
-import com.example.FlyHigh.domain.model.*
+import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
+import com.example.FlyHigh.data.local.entity.TripEntity
 
-@Database(entities = [Trip::class, ItineraryItem::class, UserEntity::class], version = 1)
-@TypeConverters(Converters::class)
+
+@Database(
+    entities = [TripEntity::class, ItineraryItemEntity::class],
+    version = 1,
+    exportSchema = false
+)
+@TypeConverters(DateConverter::class) // <-- Agrega esta línea
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
-    abstract fun itineraryItemDao(): ItineraryItemDao
-    abstract fun userDao(): UserDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "flyhigh_database"
-                ).build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
+    abstract fun itineraryDao(): ItineraryItemDao
 }

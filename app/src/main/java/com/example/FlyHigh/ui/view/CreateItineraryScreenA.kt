@@ -13,16 +13,22 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateItineraryScreen(
+fun CreateItineraryScreenA(
     navController: NavController,
     travelViewModel: TravelViewModel,
-    viajeId: String
+    tripId: Long
 ) {
-    var itineraryName by remember { mutableStateOf(TextFieldValue("")) }
-    var itineraryDescription by remember { mutableStateOf(TextFieldValue("")) }
+    var title by remember { mutableStateOf(TextFieldValue("")) }
+    var description by remember { mutableStateOf(TextFieldValue("")) }
+    var location by remember { mutableStateOf(TextFieldValue("")) }
+    var date by remember { mutableStateOf(Date()) }
+    var startTime by remember { mutableStateOf<Date?>(null) }
+    var endTime by remember { mutableStateOf<Date?>(null) }
+    var type by remember { mutableStateOf(TextFieldValue("")) }
 
     Scaffold(
         topBar = {
@@ -36,8 +42,17 @@ fun CreateItineraryScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            if (itineraryName.text.isNotEmpty()) {
-                                travelViewModel.addItinerary(viajeId, itineraryName.text, itineraryDescription.text)
+                            if (title.text.isNotEmpty() && location.text.isNotEmpty()) {
+                                travelViewModel.addItinerary(
+                                    tripId,
+                                    title.text,
+                                    description.text,
+                                    location.text,
+                                    date,
+                                    startTime,
+                                    endTime,
+                                    type.text
+                                )
                                 navController.popBackStack()
                             }
                         }
@@ -56,18 +71,36 @@ fun CreateItineraryScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 OutlinedTextField(
-                    value = itineraryName,
-                    onValueChange = { itineraryName = it },
-                    label = { Text("Nombre del Itinerario") },
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Título") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
-                    value = itineraryDescription,
-                    onValueChange = { itineraryDescription = it },
+                    value = description,
+                    onValueChange = { description = it },
                     label = { Text("Descripción") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { location = it },
+                    label = { Text("Ubicación") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = type,
+                    onValueChange = { type = it },
+                    label = { Text("Tipo de evento") },
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -75,8 +108,17 @@ fun CreateItineraryScreen(
 
                 Button(
                     onClick = {
-                        if (itineraryName.text.isNotEmpty()) {
-                            travelViewModel.addItinerary(viajeId, itineraryName.text, itineraryDescription.text)
+                        if (title.text.isNotEmpty() && location.text.isNotEmpty()) {
+                            travelViewModel.addItinerary(
+                                tripId,
+                                title.text,
+                                description.text,
+                                location.text,
+                                date,
+                                startTime,
+                                endTime,
+                                type.text
+                            )
                             navController.popBackStack()
                         }
                     },
@@ -89,3 +131,4 @@ fun CreateItineraryScreen(
         }
     )
 }
+

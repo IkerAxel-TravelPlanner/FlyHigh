@@ -1,6 +1,7 @@
 package com.example.FlyHigh
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -9,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.FlyHigh.ui.view.*
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import com.example.FlyHigh.ui.view.CreateItineraryScreenA
 
 @Composable
 fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel) {
@@ -61,25 +63,42 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
             }
         }
         composable("viaje/{viajeId}/createItinerario", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
-            backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                CreateItineraryScreen(navController, travelViewModel, viajeId)
+            backStackEntry.arguments?.getString("viajeId")?.toLongOrNull()?.let { tripId ->
+                CreateItineraryScreenA(navController, travelViewModel, tripId)
             }
         }
-        composable("viaje/{viajeId}/itinerario/{itineraryId}", arguments = listOf(
-            navArgument("viajeId") { type = NavType.StringType },
-            navArgument("itineraryId") { type = NavType.StringType }
-        )) { backStackEntry ->
-            val viajeId = backStackEntry.arguments?.getString("viajeId") ?: return@composable
-            val itineraryId = backStackEntry.arguments?.getString("itineraryId") ?: return@composable
-            EditItineraryScreen(navController, travelViewModel, viajeId, itineraryId)
+
+        composable(
+            route = "viaje/{viajeId}/itinerario/{itineraryId}",
+            arguments = listOf(
+                navArgument("viajeId") { type = NavType.StringType },
+                navArgument("itineraryId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val viajeId = backStackEntry.arguments?.getString("viajeId")?.toLongOrNull()
+            val itineraryId = backStackEntry.arguments?.getString("itineraryId")?.toLongOrNull()
+
+            if (viajeId != null && itineraryId != null) {
+                EditItineraryScreen(navController, travelViewModel, viajeId, itineraryId)
+            } else {
+                LaunchedEffect(Unit) {
+                    navController.popBackStack() // Volver atrás si los IDs son inválidos
+                }
+            }
         }
+
+
         composable("itinerary/{itineraryId}", arguments = listOf(navArgument("itineraryId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("itineraryId")?.let { itineraryId ->
                 ItineraryScreen(navController, travelViewModel, itineraryId)
             }
         }
 
+
         // 📌 EXPLORAR
-        composable("explore") { ExploreScreen(navController) }
+        composable("explore/details") {
+            ExploreDetailsScreen(navController)
+        }
+
     }
 }
