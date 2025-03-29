@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.FlyHigh.ui.view.*
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
-import com.example.FlyHigh.ui.view.CreateItineraryScreenA
+import com.example.FlyHigh.ui.view.CreateItineraryScreen
 
 @Composable
 fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel) {
@@ -59,12 +59,12 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
         // 📌 ITINERARIOS
         composable("viaje/{viajeId}/itinerarios", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                ItineraryListScreen(navController, travelViewModel, viajeId)
+                ItineraryScreen(navController, travelViewModel, viajeId)
             }
         }
         composable("viaje/{viajeId}/createItinerario", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("viajeId")?.toLongOrNull()?.let { tripId ->
-                CreateItineraryScreenA(navController, travelViewModel, tripId)
+                CreateItineraryScreen(navController, travelViewModel, tripId)
             }
         }
 
@@ -84,13 +84,6 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
                 LaunchedEffect(Unit) {
                     navController.popBackStack() // Volver atrás si los IDs son inválidos
                 }
-            }
-        }
-
-
-        composable("itinerary/{itineraryId}", arguments = listOf(navArgument("itineraryId") { type = NavType.StringType })) { backStackEntry ->
-            backStackEntry.arguments?.getString("itineraryId")?.let { itineraryId ->
-                ItineraryScreen(navController, travelViewModel, itineraryId)
             }
         }
 

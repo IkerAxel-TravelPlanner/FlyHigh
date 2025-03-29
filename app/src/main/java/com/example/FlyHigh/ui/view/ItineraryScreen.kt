@@ -16,28 +16,17 @@ import androidx.navigation.NavController
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, viajeId: String) {
-    val viajeIdLong = viajeId.toLongOrNull() ?: -1L
+    val viajeIdLong = viajeId.toLongOrNull() ?: return
 
-    // Obtener el viaje en tiempo real
-    val viaje by viewModel.getTripById(viajeIdLong).collectAsState(initial = null)
-
-    // Obtener itinerarios en tiempo real
     val itinerarios by viewModel.getItinerariesByTripId(viajeIdLong).collectAsState(initial = emptyList())
-
-    // Si el viaje no existe, regresar
-    if (viaje == null) {
-        LaunchedEffect(Unit) { navController.popBackStack() }
-        return
-    }
 
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text("Itinerarios de ${viaje?.title ?: ""}") },
+                title = { Text("Itinerarios del viaje $viajeId") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
@@ -46,7 +35,7 @@ fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, vi
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("viaje/$viajeId/createItinerary") }) {
+            FloatingActionButton(onClick = { navController.navigate("viaje/$viajeId/createItinerario") }) {
                 Icon(Icons.Filled.Add, contentDescription = "Añadir Itinerario")
             }
         }
