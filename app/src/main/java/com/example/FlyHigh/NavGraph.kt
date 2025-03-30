@@ -68,9 +68,7 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
             }
         }
 
-        // In NavGraph.kt
 
-// For the itinerary editing route:
         composable(
             route = "viaje/{viajeId}/itinerario/{itineraryId}",
             arguments = listOf(
@@ -117,6 +115,8 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
 
 
         // 📌 EXPLORAR
+        composable("explore") { ExploreScreen(navController) }
+
         composable("explore/details") {
             ExploreDetailsScreen(navController)
         }
@@ -125,5 +125,3 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
 }
 
 
-
-//ESTE FUNCIONA BIEN

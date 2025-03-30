@@ -32,11 +32,10 @@ fun ExploreScreen(navController: NavController) {
             .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Barra superior con botón de retroceso
         TopAppBar(
-            title = { Text(text = stringResource(id = R.string.explore_title), fontWeight = FontWeight.Bold) },
+            title = { Text(text = "Explorar", fontWeight = FontWeight.Bold) },
             navigationIcon = {
-                IconButton(onClick = { navController.navigateUp() }) {  // Función para volver atrás
+                IconButton(onClick = { navController.navigateUp() }) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Volver atrás")
                 }
             }
@@ -44,9 +43,8 @@ fun ExploreScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Encabezado con imagen de fondo
         Image(
-            painter = painterResource(id = R.drawable.imagen1), // Cambia a una imagen relevante
+            painter = painterResource(id = R.drawable.imagen1),
             contentDescription = "Explore Header",
             modifier = Modifier
                 .fillMaxWidth()
@@ -56,59 +54,60 @@ fun ExploreScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Título principal
         Text(
-            text = stringResource(id = R.string.explore_title),
+            text = "Descubre destinos únicos y experiencias inolvidables.",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Descripción
         Text(
-            text = "Descubre destinos únicos, actividades emocionantes y mucho más para tu próximo viaje.",
+            text = "Encuentra lugares icónicos y actividades emocionantes para tu próximo viaje.",
             style = MaterialTheme.typography.bodyLarge,
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Sección de acceso rápido con tarjetas
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)  // Aseguramos que haya espacio entre las tarjetas
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Uso de weight en Column
             ExploreCard(
                 title = "Lugares Icónicos",
                 description = "Explora las maravillas del mundo.",
-                imageRes = R.drawable.imagen7, // Reemplaza con una imagen adecuada
+                imageRes = R.drawable.imagen7,
                 onClick = { navController.navigate("explore/places") },
-                modifier = Modifier.weight(1f)  // Correctamente aplicando weight
+                modifier = Modifier.weight(1f)
             )
 
             ExploreCard(
                 title = "Actividades Emocionantes",
-                description = "Encuentra aventuras únicas para todos los gustos.",
-                imageRes = R.drawable.imagen1, // Reemplaza con una imagen adecuada
+                description = "Encuentra aventuras únicas.",
+                imageRes = R.drawable.imagen1,
                 onClick = { navController.navigate("explore/activities") },
-                modifier = Modifier.weight(1f)  // Correctamente aplicando weight
+                modifier = Modifier.weight(1f)
             )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Opción para ver más detalles
         Button(
-            onClick = { navController.navigate("explore/details") },
+            onClick = {
+                try {
+                    navController.navigate("explore/details")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = stringResource(id = R.string.explore_button),
+                text = "Ver más detalles",
                 color = Color.White,
                 style = MaterialTheme.typography.bodyLarge
             )
@@ -116,7 +115,6 @@ fun ExploreScreen(navController: NavController) {
     }
 }
 
-// Componente para las tarjetas de acceso rápido (Lugares, Actividades, etc.)
 @Composable
 fun ExploreCard(
     title: String,

@@ -95,4 +95,3 @@ fun ItineraryCard(itinerary: ItineraryItemEntity, navController: NavController, 
     }
 }
 
-//ESTE FUNCIONA BIEN

@@ -1,5 +1,6 @@
 package com.example.FlyHigh.ui.view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +12,10 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
@@ -23,13 +27,12 @@ import java.util.Locale
 @Composable
 fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, viajeId: String) {
     val viajeIdLong = viajeId.toLongOrNull() ?: return
-
     val itinerarios by viewModel.getItinerariesByTripId(viajeIdLong).collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(
-                title = { Text("Itinerarios del viaje $viajeId") },
+            CenterAlignedTopAppBar(
+                title = { Text("Itinerario del Viaje", style = MaterialTheme.typography.headlineMedium) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
@@ -38,8 +41,11 @@ fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, vi
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate("viaje/$viajeId/createItinerario") }) {
-                Icon(Icons.Filled.Add, contentDescription = "Añadir Itinerario")
+            FloatingActionButton(
+                onClick = { navController.navigate("viaje/$viajeId/createItinerario") },
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Añadir Itinerario", tint = Color.White)
             }
         }
     ) { padding ->
@@ -47,12 +53,18 @@ fun ItineraryScreen(navController: NavController, viewModel: TravelViewModel, vi
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (itinerarios.isEmpty()) {
-                Text("No hay itinerarios disponibles.", style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    "No hay itinerarios disponibles.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
             } else {
-                LazyColumn {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(itinerarios) { itinerary ->
                         ItineraryItem(itinerary, navController, viajeId, viewModel)
                     }
@@ -68,64 +80,38 @@ fun ItineraryItem(itinerary: ItineraryItemEntity, navController: NavController, 
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable {
-                // Navigate to detail screen instead of directly to edit screen
-                navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}/detail")
-            },
+            .clickable { navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}/detail") },
         shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = itinerary.title, style = MaterialTheme.typography.titleMedium)
+            Text(text = itinerary.title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = itinerary.description, style = MaterialTheme.typography.bodyMedium)
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Display location and date
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Format date to a readable string
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 val dateString = dateFormat.format(itinerary.date)
 
-                Text(
-                    text = itinerary.location,
-                    style = MaterialTheme.typography.bodySmall
-                )
-                Text(
-                    text = dateString,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Text(text = itinerary.location, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
+                Text(text = dateString, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
             }
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Buttons row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                // Edit button
-                IconButton(
-                    onClick = {
-                        navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}")
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Editar Itinerario"
-                    )
+                IconButton(onClick = { navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}") }) {
+                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar Itinerario", tint = MaterialTheme.colorScheme.primary)
                 }
-
-                // Delete button
-                IconButton(
-                    onClick = {
-                        viewModel.deleteItinerary(itinerary.id)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Eliminar Itinerario"
-                    )
+                IconButton(onClick = { viewModel.deleteItinerary(itinerary.id) }) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "Eliminar Itinerario", tint = Color.Red)
                 }
             }
         }
