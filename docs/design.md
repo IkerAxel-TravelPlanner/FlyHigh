@@ -178,10 +178,24 @@ Para manejar tipos de datos complejos, la aplicación utiliza Convertidores de T
 ## Uso
 
 ### Añadir un Nuevo Viaje
-Crear un nuevo objeto TripEntity val newTrip = TripEntity( title = "Mi Viaje", destination = "París", startDate = Date(), endDate = Date(), description = "Un viaje a París", imageUrl = null ) // Usar el TripDao para insertar el viaje tripDao.insertTrip(newTrip) 
+**`Crear un nuevo objeto TripEntity`** 
+val newTrip = TripEntity( 
+   title = "Mi Viaje", 
+   destination = "París", 
+   startDate = Date(), 
+   endDate = Date(), 
+   description = "Un viaje a París", 
+   imageUrl = null ) 
+// Usar el TripDao para insertar el viaje tripDao.insertTrip(newTrip) 
 
 ### Actualizar un Elemento de Itinerario Existente
-Obtener el elemento del itinerario por su ID (si es necesario) val itineraryItemFlow: Flow<ItineraryItemEntity? >  = itineraryItemDao.getItineraryItemById( itineraryId)  itineraryItemFlow.collect { existingItem -> existingItem?.let { // Crear una copia del elemento existente con los detalles actual
+**`Obtener el elemento del itinerario por su ID (si es necesario):`** 
+val itineraryItemFlow: Flow<ItineraryItemEntity? >  = itineraryItemDao.getItineraryItemById( itineraryId)  
+   itineraryItemFlow.collect { existingItem -> existingItem?.let { // Crear una copia del elemento existente con los detalles actual
+
+
+
+
 
 Este documento describe la estructura principal y las interacciones dentro de la aplicación **Travel Planner**, asegurando una arquitectura bien definida para su desarrollo futuro.
 
