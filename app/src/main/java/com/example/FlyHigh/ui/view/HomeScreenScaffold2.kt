@@ -34,7 +34,8 @@ fun HomeScreenScaffold2(navController: NavController) {
                 title = {
                     Text(
                         text = stringResource(id = R.string.home_title),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 actions = {
@@ -45,169 +46,120 @@ fun HomeScreenScaffold2(navController: NavController) {
                         expanded = showSettingsMenu,
                         onDismissRequest = { showSettingsMenu = false }
                     ) {
-                        DropdownMenuItem(
-                            leadingIcon = { Icon(Icons.Filled.Info, contentDescription = null) },
-                            text = { Text(stringResource(id = R.string.about)) },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate("about")
-                            }
-                        )
-                        DropdownMenuItem(
-                            leadingIcon = { Icon(Icons.Filled.Person, contentDescription = null) },
-                            text = { Text(stringResource(id = R.string.profile)) },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate("profile")
-                            }
-                        )
-                        DropdownMenuItem(
-                            leadingIcon = { Icon(Icons.Filled.Language, contentDescription = null) },
-                            text = { Text(stringResource(id = R.string.change_language)) },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate("language_settings")
-                            }
-                        )
-                        DropdownMenuItem(
-                            leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) },
-                            text = { Text(stringResource(id = R.string.settings)) },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate("settings")
-                            }
-                        )
-                        DropdownMenuItem(
-                            leadingIcon = { Icon(Icons.Filled.Info, contentDescription = null) },
-                            text = { Text(stringResource(id = R.string.version)) },
-                            onClick = {
-                                showSettingsMenu = false
-                                navController.navigate("version")
-                            }
-                        )
+                        listOf(
+                            "about" to Icons.Filled.Info,
+                            "profile" to Icons.Filled.Person,
+                            "language_settings" to Icons.Filled.Language,
+                            "settings" to Icons.Filled.Settings,
+                            "version" to Icons.Filled.Info
+                        ).forEach { (route, icon) ->
+                            DropdownMenuItem(
+                                leadingIcon = { Icon(icon, contentDescription = null) },
+                                text = { Text(stringResource(id = R.string.home_title)) },
+                                onClick = {
+                                    showSettingsMenu = false
+                                    navController.navigate(route)
+                                }
+                            )
+                        }
                     }
                 }
             )
         },
         bottomBar = {
             BottomNavigationBar(selectedIndex) { newIndex ->
-                selectedIndex = newIndex
-                when (newIndex) {
-                    0 -> navController.navigate("home") // Evita navegar repetidamente a la misma ruta
-                    1 -> navController.navigate("viajes")
-                    2 -> navController.navigate("explore")
+                if (selectedIndex != newIndex) {
+                    selectedIndex = newIndex
+                    navController.navigate(
+                        when (newIndex) {
+                            0 -> "home"
+                            1 -> "viajes"
+                            else -> "explore"
+                        }
+                    )
                 }
             }
         }
     ) { padding ->
-
-        // Aquí aplicamos directamente el color de fondo en el Modifier de la columna
         Column(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.background)  // Aplico el color de fondo directamente aquí
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            // Encabezado con imagen
-            Image(
-                painter = painterResource(id = R.drawable.imagen1),
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(bottomEnd = 24.dp, bottomStart = 24.dp))
-            )
-
+            HeaderImage()
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Título principal
-            Text(
-                text = "¡Organiza tu próximo viaje!",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
+            TitleText("¡Organiza tu próximo viaje!")
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Sección de acceso rápido
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                QuickAccessCard(
-                    title = "Mis Viajes",
-                    icon = Icons.Filled.List,
-                    onClick = { navController.navigate("viajes") }
-                )
-                QuickAccessCard(
-                    title = "Explorar",
-                    icon = Icons.Filled.Explore,
-                    onClick = { navController.navigate("explore") }
-                )
-            }
-
+            QuickAccessRow(navController)
             Spacer(modifier = Modifier.height(24.dp))
-
-            // Lista de opciones destacadas
-            FeatureCard(
-                title = "Descubre lugares increíbles",
-                description = "Explora destinos únicos y encuentra tu próximo destino soñado.",
-                imageRes = R.drawable.imagen1,
-                onClick = { navController.navigate("explore") }
-            )
-
-            FeatureCard(
-                title = "Gestiona tus itinerarios",
-                description = "Organiza tus actividades y haz que cada viaje sea perfecto.",
-                imageRes = R.drawable.imagen7,
-                onClick = { navController.navigate("viajes") }
-            )
+            FeatureCard("Descubre lugares increíbles", "Explora destinos únicos.", R.drawable.imagen1, navController, "explore")
+            FeatureCard("Gestiona tus itinerarios", "Organiza tus actividades.", R.drawable.imagen7, navController, "viajes")
         }
+    }
+}
+
+@Composable
+fun HeaderImage() {
+    Image(
+        painter = painterResource(id = R.drawable.imagen1),
+        contentDescription = null,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .clip(RoundedCornerShape(bottomEnd = 24.dp, bottomStart = 24.dp))
+    )
+}
+
+@Composable
+fun TitleText(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(horizontal = 16.dp)
+    )
+}
+
+@Composable
+fun QuickAccessRow(navController: NavController) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        QuickAccessCard("Mis Viajes", Icons.Filled.List) { navController.navigate("viajes") }
+        QuickAccessCard("Explorar", Icons.Filled.Explore) { navController.navigate("explore") }
     }
 }
 
 @Composable
 fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .size(150.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.primary)
-            .padding(8.dp),
+    ElevatedCard(
+        modifier = Modifier.size(150.dp),
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(icon, contentDescription = title, tint = Color.White, modifier = Modifier.size(40.dp))
+            Icon(icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = title, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(text = title, fontWeight = FontWeight.Bold)
         }
     }
 }
 
 @Composable
-fun FeatureCard(title: String, description: String, imageRes: Int, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+fun FeatureCard(title: String, description: String, imageRes: Int, navController: NavController, route: String) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        onClick = onClick
+        onClick = { navController.navigate(route) }
     ) {
         Column {
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = title,
-                modifier = Modifier.fillMaxWidth().height(150.dp)
-            )
+            Image(painter = painterResource(id = imageRes), contentDescription = title, modifier = Modifier.fillMaxWidth().height(150.dp))
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(4.dp))
@@ -220,23 +172,14 @@ fun FeatureCard(title: String, description: String, imageRes: Int, onClick: () -
 @Composable
 fun BottomNavigationBar(selectedIndex: Int, onItemSelected: (Int) -> Unit) {
     NavigationBar {
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Menu, contentDescription = "Menú") },
-            label = { Text("Inicio") },
-            selected = selectedIndex == 0,
-            onClick = { onItemSelected(0) }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.List, contentDescription = "Viajes") },
-            label = { Text("Viajes") },
-            selected = selectedIndex == 1,
-            onClick = { onItemSelected(1) }
-        )
-        NavigationBarItem(
-            icon = { Icon(Icons.Filled.Explore, contentDescription = "Explorar") },
-            label = { Text("Explorar") },
-            selected = selectedIndex == 2,
-            onClick = { onItemSelected(2) }
-        )
+        listOf("Inicio" to Icons.Filled.Menu, "Viajes" to Icons.Filled.List, "Explorar" to Icons.Filled.Explore)
+            .forEachIndexed { index, (label, icon) ->
+                NavigationBarItem(
+                    icon = { Icon(icon, contentDescription = label) },
+                    label = { Text(label) },
+                    selected = selectedIndex == index,
+                    onClick = { onItemSelected(index) }
+                )
+            }
     }
 }
