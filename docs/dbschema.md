@@ -110,15 +110,37 @@ tripDao.insertTrip(newTrip)
 
 ### ✏️ Actualizar un Elemento de Itinerario
 ```kotlin
-val itineraryItemFlow: Flow<ItineraryItemEntity?> = itineraryItemDao.getItineraryItemById(itineraryId)
 itineraryItemFlow.collect { existingItem ->
-   existingItem?.let {
-      val updatedItem = it.copy(name = "Nuevo nombre")
-      itineraryItemDao.updateItineraryItem(updatedItem)
-   }
+    existingItem?.let {
+        val updatedItem = it.copy(
+            name = "Nuevo nombre",
+            description = "Nueva Descripción",
+            location = "Nueva Ubicación"
+        )
+        itineraryItemDao.updateItineraryItem(updatedItem)
+    }
+}
+```
+
+### 🗑️ Eliminar un Viaje
+```kotlin
+tripDao.deleteTripById(tripId)
+```
+
+### 📋 Obtener Todos los Elementos del Itinerario para un Viaje
+```kotlin
+val allItineraryItems: Flow<List<ItineraryItemEntity>> = itineraryItemDao.getItinerariesByTripId(tripId)
+allItineraryItems.collect { itineraryList ->
+    println("Elementos del Itinerario: $itineraryList")
 }
 ```
 
 ---
 
+## 🗄️ Gestión de la Base de Datos
+La base de datos se gestiona utilizando **AppDatabase** de Room, proporcionando acceso a los DAOs y manejando la creación y actualización de la base de datos.
+
+---
+
+## ✅ Conclusión
 Este documento describe la estructura principal y las interacciones dentro de la aplicación **FlyHigh**, asegurando una arquitectura bien definida para su desarrollo futuro. 🚀
