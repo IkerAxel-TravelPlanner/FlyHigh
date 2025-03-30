@@ -78,6 +78,3 @@ El sistema está diseñado de manera que cada entidad pueda mapearse fácilmente
 - **Gestión de Presupuesto**: Agregar seguimiento financiero a los viajes.
 - **Colaboradores**: Permitir que varios usuarios editen viajes.
 - **Modo Offline**: Habilitar acceso a los viajes sin conexión a internet.
-
-Este documento describe la estructura principal y las interacciones dentro de la aplicación **Travel Planner**, asegurando una arquitectura bien definida para su desarrollo futuro.
-
