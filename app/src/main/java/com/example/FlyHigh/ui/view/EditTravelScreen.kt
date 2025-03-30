@@ -12,21 +12,34 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditTravelScreen(navController: NavController, viewModel: TravelViewModel, travelId: String) {
-    val travel by viewModel.getTripById(travelId.toLongOrNull() ?: -1).collectAsState(initial = null)
+    val id = travelId.toLongOrNull()
+    val travel by viewModel.getTripById(id ?: -1L).collectAsState(initial = null)
 
-    if (travel == null) {
-        LaunchedEffect(Unit) {
-            navController.popBackStack()
+    var name by remember { mutableStateOf("") }
+    var destination by remember { mutableStateOf("") }
+    var startDate by remember { mutableStateOf("") }
+    var endDate by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
+
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    LaunchedEffect(travel) {
+        travel?.let {
+            name = it.title
+            destination = it.destination
+            startDate = dateFormat.format(it.startDate)
+            endDate = dateFormat.format(it.endDate)
+            description = it.description
+            imageUrl = it.imageUrl ?: ""
         }
-        return
     }
-
-    var name by remember { mutableStateOf(travel!!.title) }
-    var description by remember { mutableStateOf(travel!!.description) }
 
     Scaffold(
         topBar = {
@@ -52,30 +65,64 @@ fun EditTravelScreen(navController: NavController, viewModel: TravelViewModel, t
                 onValueChange = { name = it },
                 label = { Text("Nombre del Viaje") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { /* Ocultar teclado */ })
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = destination,
+                onValueChange = { destination = it },
+                label = { Text("Destino") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = startDate,
+                onValueChange = { startDate = it },
+                label = { Text("Fecha de inicio (YYYY-MM-DD)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = endDate,
+                onValueChange = { endDate = it },
+                label = { Text("Fecha de fin (YYYY-MM-DD)") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
                 label = { Text("Descripción") },
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { /* Ocultar teclado */ })
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = imageUrl,
+                onValueChange = { imageUrl = it },
+                label = { Text("URL de la imagen") },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Button(
                 onClick = {
-                    if (name.isNotBlank() && description.isNotBlank()) {
-                        viewModel.updateTravel(
-                            travel!!.copy(title = name, description = description)
+                    travel?.let {
+                        val updatedTravel = it.copy(
+                            title = name,
+                            destination = destination,
+                            startDate = dateFormat.parse(startDate) ?: it.startDate,
+                            endDate = dateFormat.parse(endDate) ?: it.endDate,
+                            description = description,
+                            imageUrl = imageUrl.takeIf { it.isNotBlank() }
                         )
+                        viewModel.updateTravel(updatedTravel)
                         navController.popBackStack()
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = travel != null
             ) {
                 Text("Guardar cambios")
             }
