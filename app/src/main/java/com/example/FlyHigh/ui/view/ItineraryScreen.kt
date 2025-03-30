@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -15,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +68,10 @@ fun ItineraryItem(itinerary: ItineraryItemEntity, navController: NavController, 
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}") },
+            .clickable {
+                // Navigate to detail screen instead of directly to edit screen
+                navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}/detail")
+            },
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -74,9 +80,53 @@ fun ItineraryItem(itinerary: ItineraryItemEntity, navController: NavController, 
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = itinerary.description, style = MaterialTheme.typography.bodyMedium)
 
-            // Botón de eliminar itinerario
-            IconButton(onClick = { viewModel.deleteItinerary(itinerary.id) }) {
-                Icon(Icons.Filled.Delete, contentDescription = "Eliminar Itinerario")
+            // Display location and date
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Format date to a readable string
+                val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                val dateString = dateFormat.format(itinerary.date)
+
+                Text(
+                    text = itinerary.location,
+                    style = MaterialTheme.typography.bodySmall
+                )
+                Text(
+                    text = dateString,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            // Buttons row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                // Edit button
+                IconButton(
+                    onClick = {
+                        navController.navigate("viaje/$viajeId/itinerario/${itinerary.id}")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Editar Itinerario"
+                    )
+                }
+
+                // Delete button
+                IconButton(
+                    onClick = {
+                        viewModel.deleteItinerary(itinerary.id)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar Itinerario"
+                    )
+                }
             }
         }
     }

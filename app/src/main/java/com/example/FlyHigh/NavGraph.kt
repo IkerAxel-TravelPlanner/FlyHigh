@@ -15,7 +15,7 @@ import com.example.FlyHigh.ui.view.CreateItineraryScreen
 @Composable
 fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel) {
 
-    val userLoggedIn = false // Sustituye por lógica real
+    val userLoggedIn = false
     val startDestination = if (userLoggedIn) "home" else "login"
 
     NavHost(navController = navController, startDestination = startDestination) {
@@ -68,6 +68,9 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
             }
         }
 
+        // In NavGraph.kt
+
+// For the itinerary editing route:
         composable(
             route = "viaje/{viajeId}/itinerario/{itineraryId}",
             arguments = listOf(
@@ -75,16 +78,41 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
                 navArgument("itineraryId") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val viajeId = backStackEntry.arguments?.getString("viajeId")?.toLongOrNull()
-            val itineraryId = backStackEntry.arguments?.getString("itineraryId")?.toLongOrNull()
+            val viajeId = backStackEntry.arguments?.getString("viajeId")
+            val itineraryId = backStackEntry.arguments?.getString("itineraryId")
 
             if (viajeId != null && itineraryId != null) {
-                EditItineraryScreen(navController, travelViewModel, viajeId, itineraryId)
+                EditItineraryScreen(
+                    navController = navController,
+                    viewModel = travelViewModel,
+                    viajeId = viajeId.toLongOrNull() ?: -1L,
+                    itineraryId = itineraryId.toLongOrNull() ?: -1L
+                )
             } else {
+                // Handle invalid arguments
                 LaunchedEffect(Unit) {
-                    navController.popBackStack() // Volver atrás si los IDs son inválidos
+                    navController.popBackStack()
                 }
             }
+        }
+
+        // Route for viewing itinerary details
+        composable(
+            route = "viaje/{viajeId}/itinerario/{itineraryId}/detail",
+            arguments = listOf(
+                navArgument("viajeId") { type = NavType.StringType },
+                navArgument("itineraryId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val viajeId = backStackEntry.arguments?.getString("viajeId") ?: ""
+            val itineraryId = backStackEntry.arguments?.getString("itineraryId") ?: ""
+
+            ItineraryDetailScreen(
+                navController = navController,
+                viewModel = travelViewModel,
+                viajeId = viajeId,
+                itineraryId = itineraryId
+            )
         }
 
 
