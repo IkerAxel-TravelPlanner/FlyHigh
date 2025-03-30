@@ -1,3 +1,4 @@
+
 package com.example.FlyHigh
 
 import androidx.compose.runtime.Composable
@@ -117,9 +118,23 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
 
 
         // 📌 EXPLORAR
+        composable("explore") {
+            ExploreScreen(navController)
+        }
+
         composable("explore/details") {
             ExploreDetailsScreen(navController)
         }
 
+        // Añadir estas rutas para completar la navegación de exploración
+        composable("explore/places") {
+            // Implementar o usar una pantalla temporal
+            ExploreDetailsScreen(navController) // Temporalmente usando la misma pantalla
+        }
+
+        composable("explore/activities") {
+            // Implementar o usar una pantalla temporal
+            ExploreDetailsScreen(navController) // Temporalmente usando la misma pantalla
+        }
     }
 }
