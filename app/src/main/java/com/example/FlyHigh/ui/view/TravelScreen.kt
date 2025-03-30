@@ -253,5 +253,3 @@ fun TravelItem(
         }
     }
 }
-
-// ESTE FUNCIONA BIEN MENOS EL BOTON DE EDITAR
