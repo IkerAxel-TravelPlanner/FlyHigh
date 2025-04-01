@@ -22,7 +22,7 @@ import com.example.FlyHigh.data.local.entity.TripEntity
     version = 1,
     exportSchema = false
 )
-@TypeConverters(DateConverter::class) // <-- Agrega esta línea
+@TypeConverters(DateConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tripDao(): TripDao
     abstract fun itineraryDao(): ItineraryItemDao

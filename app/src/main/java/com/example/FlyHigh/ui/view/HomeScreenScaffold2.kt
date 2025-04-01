@@ -46,16 +46,19 @@ fun HomeScreenScaffold2(navController: NavController) {
                         expanded = showSettingsMenu,
                         onDismissRequest = { showSettingsMenu = false }
                     ) {
-                        listOf(
-                            "about" to Icons.Filled.Info,
-                            "profile" to Icons.Filled.Person,
-                            "language_settings" to Icons.Filled.Language,
-                            "settings" to Icons.Filled.Settings,
-                            "version" to Icons.Filled.Info
-                        ).forEach { (route, icon) ->
+                        // Definir las opciones con sus nombres correspondientes
+                        val menuItems = listOf(
+                            Triple("about", Icons.Filled.Info, "Acerca de"),
+                            Triple("profile", Icons.Filled.Person, "Perfil"),
+                            Triple("language_settings", Icons.Filled.Language, "Idioma"),
+                            Triple("settings", Icons.Filled.Settings, "Configuración"),
+                            Triple("version", Icons.Filled.Info, "Versión")
+                        )
+
+                        menuItems.forEach { (route, icon, label) ->
                             DropdownMenuItem(
                                 leadingIcon = { Icon(icon, contentDescription = null) },
-                                text = { Text(stringResource(id = R.string.home_title)) },
+                                text = { Text(label) },
                                 onClick = {
                                     showSettingsMenu = false
                                     navController.navigate(route)
