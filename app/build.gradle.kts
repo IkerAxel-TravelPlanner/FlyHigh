@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.kapt") // Plugin kapt agregado
+    alias(libs.plugins.google.gms.google.services)
+
+    // HILT
+    id("kotlin-kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
@@ -28,19 +32,23 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
+    // AndroidX + Compose
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -51,13 +59,32 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.protolite.well.known.types)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.appcompat)
-    implementation(libs.transportation.consumer)
-    implementation(libs.firebase.crashlytics.buildtools)
-    implementation("com.google.code.gson:gson:2.8.8")
     implementation(libs.androidx.adapters)
+
+    // Firebase & otros
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.transportation.consumer)
+    implementation(libs.protolite.well.known.types)
+    implementation("com.google.code.gson:gson:2.8.8")
+
+    // Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.rxjava2)
+    implementation(libs.androidx.room.rxjava3)
+    implementation(libs.androidx.room.guava)
+    testImplementation(libs.androidx.room.testing)
+    implementation(libs.androidx.room.paging)
+
+    // HILT
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,15 +92,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Room dependencies
-    val roomVersion = "2.6.1" // O la última versión
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    kapt("androidx.room:room-compiler:$roomVersion")  // <-- Agregado
-    implementation("androidx.room:room-rxjava2:$roomVersion")
-    implementation("androidx.room:room-rxjava3:$roomVersion")
-    implementation("androidx.room:room-guava:$roomVersion")
-    testImplementation("androidx.room:room-testing:$roomVersion")
-    implementation("androidx.room:room-paging:$roomVersion")
 }
