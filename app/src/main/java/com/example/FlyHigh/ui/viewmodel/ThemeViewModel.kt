@@ -2,8 +2,11 @@ package com.example.FlyHigh.ui.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class   ThemeViewModel : ViewModel() {
+@HiltViewModel
+class ThemeViewModel @Inject constructor() : ViewModel() {
     // El estado del tema oscuro o claro
     var isDarkTheme = mutableStateOf(false) // Comienza en modo claro
 

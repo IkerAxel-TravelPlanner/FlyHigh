@@ -2,27 +2,25 @@ package com.example.FlyHigh.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
 import com.example.FlyHigh.data.local.dao.TripDao
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.data.local.entity.TripEntity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.util.Date
+import javax.inject.Inject
 
 /**
  * ViewModel para gestionar la lógica de negocio relacionada con los viajes y los itinerarios.
  * Proporciona métodos para interactuar con la base de datos a través de los DAOs.
- *
- * @param tripDao DAO para acceder a los datos de los viajes.
- * @param itineraryItemDao DAO para acceder a los datos de los itinerarios.
  */
-
-class TravelViewModel(
+@HiltViewModel
+class TravelViewModel @Inject constructor(
     private val tripDao: TripDao,
     private val itineraryItemDao: ItineraryItemDao
 ) : ViewModel() {
@@ -109,17 +107,5 @@ class TravelViewModel(
             itineraryItemDao.deleteItineraryItemById(itineraryId)
             Log.i(TAG, "Itinerary deleted successfully with ID: $itineraryId")
         }
-    }
-}
-
-class TravelViewModelFactory(
-    private val tripDao: TripDao,
-    private val itineraryItemDao: ItineraryItemDao
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(TravelViewModel::class.java)) {
-            return TravelViewModel(tripDao, itineraryItemDao) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
