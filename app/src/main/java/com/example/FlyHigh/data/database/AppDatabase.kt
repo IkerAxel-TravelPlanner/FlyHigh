@@ -6,11 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.FlyHigh.data.local.converters.DateConverter
-import com.example.FlyHigh.data.local.converters.MapConverter
-import com.example.FlyHigh.data.local.converters.UserConverter
-import com.example.FlyHigh.data.local.converters.ItineraryItemListConverter
-import com.example.FlyHigh.data.local.converters.ImageListConverter
-import com.example.FlyHigh.data.local.converters.AIRecommendationsListConverter
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
 import com.example.FlyHigh.data.local.dao.TripDao
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
