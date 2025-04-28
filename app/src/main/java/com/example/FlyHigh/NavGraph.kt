@@ -11,16 +11,21 @@ import androidx.navigation.navArgument
 import com.example.FlyHigh.ui.view.*
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import com.example.FlyHigh.ui.view.CreateItineraryScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel) {
-
-    val userLoggedIn = false
+fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel? = null) {
+    // Verificar si hay un usuario autenticado con Firebase
+    val userLoggedIn = FirebaseAuth.getInstance().currentUser != null
     val startDestination = if (userLoggedIn) "home" else "login"
+
+    // Si no se proporciona un viewModel, se puede manejar dentro de cada composable con hiltViewModel()
+    val viewModel = travelViewModel ?: androidx.hilt.navigation.compose.hiltViewModel<TravelViewModel>()
 
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable("login") { LoginScreen2(navController) }
+        composable("register") { RegisterScreen(navController) }
         composable("home") { HomeScreenScaffold2(navController) }
         composable("profile") { ProfileScreen(navController, null) }
         composable("profile/{id}", arguments = listOf(navArgument("id") { type = NavType.IntType })) {
@@ -43,31 +48,30 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
         composable("advanced_settings") { AdvancedSettingsScreen(navController) }
 
         // 📌 VIAJES
-        composable("viajes") { TravelScreen(navController, travelViewModel) }
-        composable("createViaje") { CreateTravelScreen(navController, travelViewModel) }
+        composable("viajes") { TravelScreen(navController, viewModel) }
+        composable("createViaje") { CreateTravelScreen(navController, viewModel) }
         composable("viaje/{viajeId}", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                TravelDetailScreen(navController, travelViewModel, viajeId)
+                TravelDetailScreen(navController, viewModel, viajeId)
             }
         }
         composable("editViaje/{viajeId}", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                EditTravelScreen(navController, travelViewModel, viajeId)
+                EditTravelScreen(navController, viewModel, viajeId)
             }
         }
 
         // 📌 ITINERARIOS
         composable("viaje/{viajeId}/itinerarios", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                ItineraryScreen(navController, travelViewModel, viajeId)
+                ItineraryScreen(navController, viewModel, viajeId)
             }
         }
         composable("viaje/{viajeId}/createItinerario", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
             backStackEntry.arguments?.getString("viajeId")?.toLongOrNull()?.let { tripId ->
-                CreateItineraryScreen(navController, travelViewModel, tripId)
+                CreateItineraryScreen(navController, viewModel, tripId)
             }
         }
-
 
         composable(
             route = "viaje/{viajeId}/itinerario/{itineraryId}",
@@ -82,7 +86,7 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
             if (viajeId != null && itineraryId != null) {
                 EditItineraryScreen(
                     navController = navController,
-                    viewModel = travelViewModel,
+                    viewModel = viewModel,
                     viajeId = viajeId.toLongOrNull() ?: -1L,
                     itineraryId = itineraryId.toLongOrNull() ?: -1L
                 )
@@ -107,12 +111,11 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
 
             ItineraryDetailScreen(
                 navController = navController,
-                viewModel = travelViewModel,
+                viewModel = viewModel,
                 viajeId = viajeId,
                 itineraryId = itineraryId
             )
         }
-
 
         // 📌 EXPLORAR
         composable("explore") { ExploreScreen(navController) }
@@ -120,8 +123,5 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel)
         composable("explore/details") {
             ExploreDetailsScreen(navController)
         }
-
     }
 }
-
-
