@@ -74,6 +74,7 @@ dependencies {
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.firestore.ktx)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.rxjava2)
     implementation(libs.androidx.room.rxjava3)

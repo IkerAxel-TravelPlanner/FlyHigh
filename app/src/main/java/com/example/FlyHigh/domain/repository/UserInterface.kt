@@ -1,10 +1,30 @@
 package com.example.FlyHigh.domain.repository
 
+import com.example.FlyHigh.domain.model.User
+import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface UserInterface {
-    fun register(userId: String,name: String,email: String,phoneNumber: String,dateOfBirth: Date,passwordHash: String) {}
-    fun updateProfile(userId: String,name: String,email: String,phoneNumber: String,dateOfBirth: Date,passwordHash: String) {}
-    fun deleteAccount(userId: String) {}
-}
+    suspend fun registerUser(
+        username: String,
+        email: String,
+        birthDate: Date,
+        address: String,
+        country: String,
+        phoneNumber: String,
+        acceptEmailsOffers: Boolean,
+        firebaseUid: String? = null
+    ): Long
 
+    suspend fun updateUser(user: User)
+
+    suspend fun getUserByEmail(email: String): User?
+
+    suspend fun getUserByUsername(username: String): User?
+
+    suspend fun isUsernameExists(username: String): Boolean
+
+    suspend fun getUserByFirebaseUid(firebaseUid: String): User?
+
+    fun getUserById(userId: Long): Flow<User?>
+}
