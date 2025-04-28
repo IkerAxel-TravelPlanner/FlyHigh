@@ -43,10 +43,20 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
         }
 
         composable("home") { HomeScreenScaffold2(navController) }
-        composable("profile") { ProfileScreen(navController, null) }
-        composable("profile/{id}", arguments = listOf(navArgument("id") { type = NavType.IntType })) {
-            val userId = it.arguments?.getInt("id") ?: -1
+        composable("profile") {
+            ProfileScreen(navController, null)
+        }
+        composable(
+            "profile/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
+        ) {
+            val userId = it.arguments?.getString("userId")
             ProfileScreen(navController, userId)
+        }
+
+        // Ruta para editar perfil (AÑADIDA)
+        composable("editProfile") {
+            EditProfileScreen(navController)
         }
 
         // 📌 Configuración y Acerca de

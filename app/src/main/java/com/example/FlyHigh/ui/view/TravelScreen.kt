@@ -21,14 +21,23 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.FlyHigh.data.local.entity.TripEntity
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
+import kotlinx.coroutines.flow.Flow
 import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
+    // Observar el ID del usuario actual
+    val currentUserId by viewModel.currentUserId.collectAsState()
+    // Usar LaunchedEffect para actualizar la pantalla cuando cambie el usuario
+    LaunchedEffect(currentUserId) {
+        viewModel.refreshTrips()
+    }
+
     // Obtener la lista de viajes en tiempo real
-    val travels by viewModel.getAllTrips().collectAsState(initial = emptyList())
+    val tripsFlow = remember(currentUserId) { viewModel.getAllTrips() }
+    val travels by tripsFlow.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
@@ -54,7 +63,9 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navController.navigate("createViaje") },
+                onClick = {
+                    navController.navigate("createViaje")
+                },
                 containerColor = MaterialTheme.colorScheme.primary
             ) {
                 Icon(
@@ -81,7 +92,9 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
                         TravelItem(
                             travel = travel,
                             navController = navController,
-                            onDeleteTravel = { viewModel.deleteTravel(travel.id) },
+                            onDeleteTravel = {
+                                viewModel.deleteTravel(travel.id)
+                            },
                             onEditTravel = {
                                 // Navegar a la pantalla de edición con el ID como String
                                 navController.navigate("editViaje/${travel.id}")

@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.room.Room
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
 import com.example.FlyHigh.data.local.dao.TripDao
+import com.example.FlyHigh.data.local.dao.UserDao
 import com.example.FlyHigh.data.local.database.AppDatabase
+import com.example.FlyHigh.data.local.database.DatabaseMigration
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,17 +24,27 @@ object DatabaseModule {
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "app_database"
-        ).fallbackToDestructiveMigration().build()
+            "flyhigh_database"
+        )
+            .addMigrations(DatabaseMigration.MIGRATION_1_2)
+            .build()
     }
 
     @Provides
-    fun provideTripDao(database: AppDatabase): TripDao {
-        return database.tripDao()
+    @Singleton
+    fun provideTripDao(appDatabase: AppDatabase): TripDao {
+        return appDatabase.tripDao()
     }
 
     @Provides
-    fun provideItineraryItemDao(database: AppDatabase): ItineraryItemDao {
-        return database.itineraryDao()
+    @Singleton
+    fun provideItineraryItemDao(appDatabase: AppDatabase): ItineraryItemDao {
+        return appDatabase.itineraryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(appDatabase: AppDatabase): UserDao {
+        return appDatabase.userDao()
     }
 }

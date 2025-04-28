@@ -1,4 +1,3 @@
-
 package com.example.FlyHigh.data.local.dao
 
 import androidx.lifecycle.LiveData
@@ -14,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TripDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTrip(trip: TripEntity)
+    suspend fun insertTrip(trip: TripEntity): Long
 
     @Update
     suspend fun updateTrip(trip: TripEntity)
@@ -25,6 +24,12 @@ interface TripDao {
     @Query("SELECT * FROM trips ORDER BY startDate DESC")
     fun getAllTrips(): LiveData<List<TripEntity>>
 
+    @Query("SELECT * FROM trips WHERE userId = :userId ORDER BY startDate DESC")
+    fun getTripsByUserId(userId: Long): LiveData<List<TripEntity>>
+
     @Query("SELECT * FROM trips WHERE id = :tripId")
     fun getTripById(tripId: Long): Flow<TripEntity?>
+
+    @Query("SELECT * FROM trips WHERE userId = :userId AND id = :tripId")
+    fun getTripByIdAndUserId(tripId: Long, userId: Long): Flow<TripEntity?>
 }
