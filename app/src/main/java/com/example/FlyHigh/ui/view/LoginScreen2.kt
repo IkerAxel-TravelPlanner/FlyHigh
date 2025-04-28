@@ -35,6 +35,11 @@ fun LoginScreen2(navController: NavController) {
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
+    // State for password reset dialog
+    var showPasswordResetDialog by remember { mutableStateOf(false) }
+    var resetEmail by remember { mutableStateOf("") }
+    var resetEmailSent by remember { mutableStateOf(false) }
+
     // Check if user is already logged in
     LaunchedEffect(auth) {
         if (auth.currentUser != null) {
@@ -139,7 +144,10 @@ fun LoginScreen2(navController: NavController) {
 
         // Forgotten password
         TextButton(
-            onClick = { /* Implementar la recuperación de contraseña */ },
+            onClick = {
+                // Navegamos a la nueva pantalla de recuperación de contraseña y pasamos el email actual como parámetro
+                navController.navigate("forgot_password?email=$email")
+            },
             modifier = Modifier.padding(top = 8.dp)
         ) {
             Text(
@@ -159,6 +167,70 @@ fun LoginScreen2(navController: NavController) {
             confirmButton = {
                 Button(onClick = { showErrorDialog = false }) {
                     Text(stringResource(id = R.string.ok_button))
+                }
+            }
+        )
+    }
+
+    // Password reset dialog
+    if (showPasswordResetDialog) {
+        AlertDialog(
+            onDismissRequest = { showPasswordResetDialog = false },
+            title = { Text("Recuperar Contraseña") },
+            text = {
+                Column {
+                    if (resetEmailSent) {
+                        Text("Se ha enviado un correo de recuperación a tu email. Por favor, revisa tu bandeja de entrada.")
+                    } else {
+                        Text("Ingresa tu dirección de correo electrónico y te enviaremos un enlace para restablecer tu contraseña.")
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedTextField(
+                            value = resetEmail,
+                            onValueChange = { resetEmail = it },
+                            label = { Text("Email") },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (resetEmailSent) {
+                            showPasswordResetDialog = false
+                        } else if (resetEmail.isNotEmpty()) {
+                            coroutineScope.launch {
+                                try {
+                                    isLoading = true
+                                    auth.sendPasswordResetEmail(resetEmail).await()
+                                    resetEmailSent = true
+                                    isLoading = false
+                                    Toast.makeText(context, "Correo de recuperación enviado", Toast.LENGTH_LONG).show()
+                                } catch (e: Exception) {
+                                    isLoading = false
+                                    errorMessage = e.message ?: "Error al enviar el correo de recuperación"
+                                    showErrorDialog = true
+                                    showPasswordResetDialog = false
+                                }
+                            }
+                        } else {
+                            errorMessage = "Por favor, introduce un email válido"
+                            showErrorDialog = true
+                            showPasswordResetDialog = false
+                        }
+                    }
+                ) {
+                    Text(if (resetEmailSent) "Cerrar" else "Enviar")
+                }
+            },
+            dismissButton = {
+                if (!resetEmailSent) {
+                    TextButton(onClick = { showPasswordResetDialog = false }) {
+                        Text("Cancelar")
+                    }
                 }
             }
         )
