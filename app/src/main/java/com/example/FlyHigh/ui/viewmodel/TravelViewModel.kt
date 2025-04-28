@@ -8,16 +8,14 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
 import com.example.FlyHigh.data.local.dao.TripDao
-import com.example.FlyHigh.data.local.dao.UserDao
+import com.example.FlyHigh.data.local.dao.UserDao // Necesitamos agregar esta importación
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.data.local.entity.TripEntity
 import com.example.FlyHigh.data.local.entity.UserEntity
-import com.example.FlyHigh.domain.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -38,13 +36,13 @@ import javax.inject.Inject
 class TravelViewModel @Inject constructor(
     private val tripDao: TripDao,
     private val itineraryItemDao: ItineraryItemDao,
-    private val userDao: UserDao
+    private val userDao: UserDao // Agregamos el UserDao
 ) : ViewModel() {
 
     private val TAG = "TravelViewModel"
 
-    private val _currentUser = MutableLiveData<UserEntity?>()
-    val currentUser: LiveData<UserEntity?> = _currentUser
+    private val _currentUser = MutableLiveData<FirebaseUser?>()
+    val currentUser: LiveData<FirebaseUser?> = _currentUser
 
     private val _currentUserId = MutableStateFlow<Long?>(null)
     val currentUserId: StateFlow<Long?> = _currentUserId.asStateFlow()
@@ -56,12 +54,15 @@ class TravelViewModel @Inject constructor(
     private val _registrationError = MutableStateFlow<String?>(null)
     val registrationError: StateFlow<String?> = _registrationError.asStateFlow()
 
-
     // Agregamos un listener para los cambios de autenticación
     private val authStateListener = FirebaseAuth.AuthStateListener { auth ->
         viewModelScope.launch {
-            if (auth.currentUser != null) {
-                loadCurrentUser()
+            val firebaseUser = auth.currentUser
+            if (firebaseUser != null) {
+                _currentUser.value = firebaseUser
+                // Convertir el UID de Firebase a un ID numérico para la base de datos local
+                _currentUserId.value = convertFirebaseUidToLocalId(firebaseUser.uid)
+                refreshTrips()
             } else {
                 _currentUser.value = null
                 _currentUserId.value = null
@@ -70,11 +71,17 @@ class TravelViewModel @Inject constructor(
         }
     }
 
+    // Método para convertir UID de Firebase a ID numérico local
+    private fun convertFirebaseUidToLocalId(uid: String): Long {
+        // Ejemplo simple: usar el hashcode del UID como ID numérico
+        // En una implementación real, esto debería buscar en una tabla de mapeo o similar
+        return uid.hashCode().toLong() and 0x7FFFFFFF // Para asegurar un valor positivo
+    }
+
     init {
         FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
         loadCurrentUser()
     }
-
 
     override fun onCleared() {
         super.onCleared()
@@ -85,28 +92,10 @@ class TravelViewModel @Inject constructor(
         viewModelScope.launch {
             val firebaseUser = FirebaseAuth.getInstance().currentUser
             if (firebaseUser != null) {
-                try {
-                    // Buscar el usuario en Room por su firebaseUid
-                    var user = withContext(Dispatchers.IO) {
-                        userDao.getUserByFirebaseUid(firebaseUser.uid)
-                    }
-
-                    // Si no existe, crearlo automáticamente
-                    if (user == null) {
-                        val userId = createLocalUserFromFirebase(firebaseUser)
-                        user = withContext(Dispatchers.IO) {
-                            userDao.getUserByIdSuspend(userId)
-                        }
-                    }
-
-                    _currentUser.value = user
-                    _currentUserId.value = user?.id
-                    refreshTrips()
-
-                    Log.d(TAG, "User loaded: ${user?.username} with ID ${user?.id}")
-                } catch (e: Exception) {
-                    Log.e(TAG, "Error loading user: ${e.message}", e)
-                }
+                _currentUser.value = firebaseUser
+                _currentUserId.value = convertFirebaseUidToLocalId(firebaseUser.uid)
+                refreshTrips()
+                Log.d(TAG, "User loaded: ${firebaseUser.displayName} with UID ${firebaseUser.uid}")
             } else {
                 _currentUser.value = null
                 _currentUserId.value = null
@@ -115,24 +104,43 @@ class TravelViewModel @Inject constructor(
         }
     }
 
-    private suspend fun createLocalUserFromFirebase(firebaseUser: FirebaseUser): Long {
-        return withContext(Dispatchers.IO) {
-            try {
-                val newUser = UserEntity(
-                    firebaseUid = firebaseUser.uid,
-                    username = firebaseUser.displayName ?: "user_${firebaseUser.uid.take(5)}",
-                    email = firebaseUser.email ?: "",
-                    birthDate = Date(),
-                    address = "",
-                    country = "",
-                    phoneNumber = firebaseUser.phoneNumber ?: "",
-                    acceptEmailsOffers = false
-                )
-                userDao.insertUser(newUser)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error creating local user: ${e.message}", e)
-                throw e
-            }
+    // Función para registrar un nuevo usuario en la base de datos local
+    suspend fun registerUser(
+        username: String,
+        email: String,
+        birthDate: Date,
+        address: String,
+        country: String,
+        phoneNumber: String,
+        acceptEmailsOffers: Boolean,
+        firebaseUid: String? // Cambiar a String? para aceptar valores nulos
+    ): Long = withContext(Dispatchers.IO) {
+        try {
+            // Crear el objeto UserEntity
+            val user = UserEntity(
+                username = username,
+                email = email,
+                birthDate = birthDate,
+                address = address,
+                country = country,
+                phoneNumber = phoneNumber,
+                acceptEmailsOffers = acceptEmailsOffers,
+                firebaseUid = firebaseUid ?: "" // Usar cadena vacía si es nulo
+            )
+
+            // Insertar en la base de datos local y obtener el ID generado
+            val userId = userDao.insertUser(user)
+
+            // Actualizar el userId actual en el ViewModel
+            _currentUserId.value = userId
+
+            Log.i(TAG, "User registered successfully with ID: $userId and Firebase UID: ${firebaseUid ?: "none"}")
+
+            return@withContext userId
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering user: ${e.message}", e)
+            _registrationError.value = e.message
+            throw e
         }
     }
 
@@ -173,39 +181,12 @@ class TravelViewModel @Inject constructor(
                     return@launch
                 }
 
-                // Asegurarnos de que tenemos un usuario local
-                var userId = _currentUserId.value
-
-                if (userId == null) {
-                    // Intentar cargar el usuario primero
-                    loadCurrentUser()
-
-                    // Esperar un momento para que se cargue
-                    delay(500)
-
-                    // Verificar si se cargó
-                    userId = _currentUserId.value
-
-                    // Si todavía no hay usuario, intentar crearlo
-                    if (userId == null) {
-                        val localUser = getUserByFirebaseUid(firebaseUser.uid)
-                        if (localUser != null) {
-                            userId = localUser.id
-                        } else {
-                            userId = createLocalUserFromFirebase(firebaseUser)
-                        }
-                    }
-                }
-
-                // Verificar que tenemos un userId válido
-                if (userId == null || userId <= 0) {
-                    Log.e(TAG, "Failed to add trip: Invalid user ID")
-                    return@launch
-                }
+                // Convertir el UID de Firebase a un ID numérico local
+                val localUserId = convertFirebaseUidToLocalId(firebaseUser.uid)
 
                 // A partir de aquí, usar el userId para crear el viaje
                 val trip = TripEntity(
-                    userId = userId,
+                    userId = localUserId, // Usamos userId en lugar de userUid
                     title = title,
                     destination = destination,
                     startDate = startDate,
@@ -218,14 +199,13 @@ class TravelViewModel @Inject constructor(
                     tripDao.insertTrip(trip)
                 }
 
-                Log.i(TAG, "Travel added successfully: $title with ID $tripId for user $userId")
+                Log.i(TAG, "Travel added successfully: $title with ID $tripId for user $localUserId")
                 refreshTrips()
             } catch (e: Exception) {
                 Log.e(TAG, "Error adding travel: ${e.message}", e)
             }
         }
     }
-
 
     // Actualizar un viaje existente
     fun updateTravel(updatedTrip: TripEntity) {
@@ -331,104 +311,4 @@ class TravelViewModel @Inject constructor(
             }
         }
     }
-
-    // Métodos de gestión de usuarios
-    suspend fun registerUser(
-        username: String,
-        email: String,
-        birthDate: Date,
-        address: String,
-        country: String,
-        phoneNumber: String,
-        acceptEmailsOffers: Boolean,
-        firebaseUid: String? = null
-    ): Long {
-        return withContext(Dispatchers.IO) {
-            try {
-                // Verificar si el usuario ya existe por firebaseUid
-                if (firebaseUid != null) {
-                    val existingUser = userDao.getUserByFirebaseUid(firebaseUid)
-                    if (existingUser != null) {
-                        // Actualizar el usuario existente en lugar de crear uno nuevo
-                        val updatedUser = existingUser.copy(
-                            username = username,
-                            email = email,
-                            birthDate = birthDate,
-                            address = address,
-                            country = country,
-                            phoneNumber = phoneNumber,
-                            acceptEmailsOffers = acceptEmailsOffers
-                        )
-                        userDao.updateUser(updatedUser)
-                        _currentUser.postValue(updatedUser)
-                        _currentUserId.value = updatedUser.id
-                        return@withContext updatedUser.id
-                    }
-                }
-
-                // Comprobar si el nombre de usuario ya existe (solo si es un usuario nuevo)
-                if (userDao.isUsernameExists(username)) {
-                    throw IllegalArgumentException("El nombre de usuario ya está en uso")
-                }
-
-                // Crear nuevo usuario
-                val userEntity = UserEntity(
-                    username = username,
-                    email = email,
-                    birthDate = birthDate,
-                    address = address,
-                    country = country,
-                    phoneNumber = phoneNumber,
-                    acceptEmailsOffers = acceptEmailsOffers,
-                    firebaseUid = firebaseUid
-                )
-
-                val userId = userDao.insertUser(userEntity)
-
-                // Actualizar el usuario actual si corresponde
-                if (FirebaseAuth.getInstance().currentUser?.uid == firebaseUid) {
-                    _currentUser.postValue(userEntity.copy(id = userId))
-                    _currentUserId.value = userId
-                }
-
-                _registrationError.value = null
-                userId
-            } catch (e: Exception) {
-                _registrationError.value = e.message
-                throw e
-            }
-        }
-    }
-
-    suspend fun isUsernameExists(username: String): Boolean {
-        return withContext(Dispatchers.IO) {
-            userDao.isUsernameExists(username)
-        }
-    }
-
-    suspend fun getUserByFirebaseUid(firebaseUid: String): UserEntity? {
-        return withContext(Dispatchers.IO) {
-            userDao.getUserByFirebaseUid(firebaseUid)
-        }
-    }
-
-    suspend fun updateUser(userEntity: UserEntity): Boolean {
-        return withContext(Dispatchers.IO) {
-            try {
-                userDao.updateUser(userEntity)
-
-                // Si es el usuario actual, actualizar el estado
-                if (userEntity.id == _currentUserId.value) {
-                    _currentUser.postValue(userEntity)
-                }
-
-                true
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating user: ${e.message}", e)
-                false
-            }
-        }
-    }
-
-
 }
