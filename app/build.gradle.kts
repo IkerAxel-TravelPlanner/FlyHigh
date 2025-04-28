@@ -2,11 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.gms.google.services)
 
     // HILT
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    // Firebase
+    id("com.google.gms.google-services") version "4.4.2"
 }
 
 android {
@@ -14,7 +15,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.FlyHigh"
+        applicationId = "com.example.flyhigh"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -83,6 +84,7 @@ dependencies {
     // HILT
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     // Testing
     testImplementation(libs.junit)
@@ -92,4 +94,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // FIREBASE
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

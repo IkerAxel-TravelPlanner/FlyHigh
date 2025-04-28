@@ -1,3 +1,4 @@
+
 package com.example.FlyHigh.data.local.dao
 
 import androidx.lifecycle.LiveData
@@ -27,5 +28,3 @@ interface TripDao {
     @Query("SELECT * FROM trips WHERE id = :tripId")
     fun getTripById(tripId: Long): Flow<TripEntity?>
 }
-
-
