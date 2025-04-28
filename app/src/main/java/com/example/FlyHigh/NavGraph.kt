@@ -26,6 +26,22 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
 
         composable("login") { LoginScreen2(navController) }
         composable("register") { RegisterScreen(navController) }
+
+        // Nueva ruta para la pantalla de recuperación de contraseña
+        composable(
+            route = "forgot_password?email={email}",
+            arguments = listOf(
+                navArgument("email") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                    nullable = true
+                }
+            )
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            ForgotPasswordScreen(navController, email)
+        }
+
         composable("home") { HomeScreenScaffold2(navController) }
         composable("profile") { ProfileScreen(navController, null) }
         composable("profile/{id}", arguments = listOf(navArgument("id") { type = NavType.IntType })) {
