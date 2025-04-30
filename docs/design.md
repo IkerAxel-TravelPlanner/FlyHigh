@@ -125,4 +125,4 @@ El sistema está diseñado de manera que cada entidad pueda mapearse fácilmente
 - Se insertó un usuario temporal (`migrated_user`) para mantener integridad referencial.
 
 ```
- 
+  
