@@ -1,6 +1,6 @@
 package com.example.FlyHigh.ui.view
 
-
+import android.app.DatePickerDialog
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,11 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,37 +22,41 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-
-
+import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import com.example.FlyHigh.utils.FormValidationsUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-
-
+import java.text.SimpleDateFormat
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterScreen(navController: NavController) {
-
-
+fun RegisterScreen(
+    navController: NavController,
+    viewModel: TravelViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val auth = FirebaseAuth.getInstance()
-
     val scrollState = rememberScrollState()
-
+    val calendar = Calendar.getInstance()
+    val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
     // Estados para los campos del formulario
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-
+    var birthDate by remember { mutableStateOf(Calendar.getInstance().time) }
+    var formattedBirthDate by remember { mutableStateOf(dateFormatter.format(birthDate)) }
+    var address by remember { mutableStateOf("") }
+    var country by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var acceptEmailsOffers by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
@@ -64,16 +64,37 @@ fun RegisterScreen(navController: NavController) {
     var showPassword by remember { mutableStateOf(false) }
     var showConfirmPassword by remember { mutableStateOf(false) }
 
-
     // Estados para errores de validación
     var nameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
+    var addressError by remember { mutableStateOf<String?>(null) }
+    var countryError by remember { mutableStateOf<String?>(null) }
+    var phoneNumberError by remember { mutableStateOf<String?>(null) }
 
+    // DatePicker Dialog
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            calendar.set(year, month, dayOfMonth)
+            birthDate = calendar.time
+            formattedBirthDate = dateFormatter.format(birthDate)
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
 
+    // Error state from ViewModel
+    val registrationError by viewModel.registrationError.collectAsState()
 
-
+    LaunchedEffect(registrationError) {
+        registrationError?.let {
+            errorMessage = it
+            showErrorDialog = true
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -125,7 +146,7 @@ fun RegisterScreen(navController: NavController) {
                     value = name,
                     onValueChange = {
                         name = it
-                        nameError = null // Limpiar error al cambiar el valor
+                        nameError = null
                     },
                     label = { Text("Nombre completo") },
                     leadingIcon = { Icon(Icons.Filled.Person, contentDescription = "Nombre") },
@@ -148,7 +169,7 @@ fun RegisterScreen(navController: NavController) {
                     value = email,
                     onValueChange = {
                         email = it
-                        emailError = null // Limpiar error al cambiar el valor
+                        emailError = null
                     },
                     label = { Text("Email") },
                     leadingIcon = { Icon(Icons.Filled.Email, contentDescription = "Email") },
@@ -172,7 +193,7 @@ fun RegisterScreen(navController: NavController) {
                     value = password,
                     onValueChange = {
                         password = it
-                        passwordError = null // Limpiar error al cambiar el valor
+                        passwordError = null
                     },
                     label = { Text("Contraseña") },
                     trailingIcon = {
@@ -204,7 +225,7 @@ fun RegisterScreen(navController: NavController) {
                     value = confirmPassword,
                     onValueChange = {
                         confirmPassword = it
-                        confirmPasswordError = null // Limpiar error al cambiar el valor
+                        confirmPasswordError = null
                     },
                     label = { Text("Confirmar contraseña") },
                     trailingIcon = {
@@ -231,8 +252,110 @@ fun RegisterScreen(navController: NavController) {
                     singleLine = true
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                // Campo de fecha de nacimiento
+                OutlinedTextField(
+                    value = formattedBirthDate,
+                    onValueChange = { /* No editable directamente */ },
+                    label = { Text("Fecha de nacimiento") },
+                    leadingIcon = { Icon(Icons.Filled.DateRange, contentDescription = "Fecha de nacimiento") },
+                    trailingIcon = {
+                        IconButton(onClick = { datePickerDialog.show() }) {
+                            Icon(Icons.Filled.CalendarToday, contentDescription = "Seleccionar fecha")
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = false,
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+                    readOnly = true
+                )
 
+                // Campo de dirección
+                OutlinedTextField(
+                    value = address,
+                    onValueChange = {
+                        address = it
+                        addressError = null
+                    },
+                    label = { Text("Dirección") },
+                    leadingIcon = { Icon(Icons.Filled.Home, contentDescription = "Dirección") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = addressError != null,
+                    supportingText = {
+                        addressError?.let {
+                            Text(
+                                it,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp))
+                )
+
+                // Campo de país
+                OutlinedTextField(
+                    value = country,
+                    onValueChange = {
+                        country = it
+                        countryError = null
+                    },
+                    label = { Text("País") },
+                    leadingIcon = { Icon(Icons.Filled.Public, contentDescription = "País") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = countryError != null,
+                    supportingText = {
+                        countryError?.let {
+                            Text(
+                                it,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+                    singleLine = true
+                )
+
+                // Campo de teléfono
+                OutlinedTextField(
+                    value = phoneNumber,
+                    onValueChange = {
+                        phoneNumber = it
+                        phoneNumberError = null
+                    },
+                    label = { Text("Número de teléfono") },
+                    leadingIcon = { Icon(Icons.Filled.Phone, contentDescription = "Teléfono") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = phoneNumberError != null,
+                    supportingText = {
+                        phoneNumberError?.let {
+                            Text(
+                                it,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    },
+                    shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone)
+                )
+
+                // Checkbox para recibir ofertas por email
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = acceptEmailsOffers,
+                        onCheckedChange = { acceptEmailsOffers = it }
+                    )
+                    Text(
+                        text = "Quiero recibir ofertas y novedades por email",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Botón de registro
                 ElevatedButton(
@@ -272,21 +395,48 @@ fun RegisterScreen(navController: NavController) {
                             isValid = false
                         }
 
+                        if (address.trim().isEmpty()) {
+                            addressError = "La dirección es obligatoria"
+                            isValid = false
+                        }
+
+                        if (country.trim().isEmpty()) {
+                            countryError = "El país es obligatorio"
+                            isValid = false
+                        }
+
+                        if (phoneNumber.trim().isEmpty()) {
+                            phoneNumberError = "El teléfono es obligatorio"
+                            isValid = false
+                        }
+
                         if (isValid) {
                             isLoading = true
                             coroutineScope.launch {
                                 try {
-                                    // Crear usuario en Firebase Auth
-                                    val authResult =
-                                        auth.createUserWithEmailAndPassword(email, password).await()
+                                    // 1. Crear usuario en Firebase Auth
+                                    val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+                                    val firebaseUid = authResult.user?.uid
 
-
-                                    // Actualizar el perfil del usuario con su nombre
+                                    // 2. Actualizar el perfil del usuario con su nombre en Firebase
                                     val profileUpdates = UserProfileChangeRequest.Builder()
                                         .setDisplayName(name)
                                         .build()
 
                                     authResult.user?.updateProfile(profileUpdates)?.await()
+
+                                    // 3. Crear el usuario en la base de datos local
+                                    val userId = viewModel.registerUser(
+                                        username = name,
+                                        email = email,
+                                        birthDate = birthDate,
+                                        address = address,
+                                        country = country,
+                                        phoneNumber = phoneNumber,
+                                        acceptEmailsOffers = acceptEmailsOffers,
+                                        firebaseUid = firebaseUid
+                                    )
+
                                     isLoading = false
                                     Toast.makeText(
                                         context,
@@ -303,10 +453,11 @@ fun RegisterScreen(navController: NavController) {
                                     errorMessage = when {
                                         e.message?.contains("email address is already in use") == true ->
                                             "Este email ya está registrado"
-
                                         e.message?.contains("network error") == true ->
                                             "Error de conexión. Verifica tu conexión a internet"
-
+                                        e.message?.contains("username already exists") == true ||
+                                                e.message?.contains("ya está en uso") == true ->
+                                            "Este nombre de usuario ya está registrado"
                                         else -> e.message ?: "Error al crear la cuenta"
                                     }
                                     showErrorDialog = true

@@ -13,7 +13,7 @@ interface UserInterface {
         country: String,
         phoneNumber: String,
         acceptEmailsOffers: Boolean,
-        firebaseUid: String? = null
+        firebaseUid: String?
     ): Long
 
     suspend fun updateUser(user: User)

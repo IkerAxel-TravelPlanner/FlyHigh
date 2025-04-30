@@ -5,3 +5,5 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class FlyHighApplication : Application()
+
+// Es para inicializar el proyecto.
