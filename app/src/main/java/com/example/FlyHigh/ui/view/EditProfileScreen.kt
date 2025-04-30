@@ -241,14 +241,29 @@ private fun EditProfileContent(
             errorMessage = inputErrors["username"]
         )
 
-        // Email
-        ProfileTextField(
+        // Email (ahora es de solo lectura)
+        OutlinedTextField(
             value = uiState.email,
-            onValueChange = onEmailChange,
-            label = "Email",
-            icon = Icons.Default.Email,
-            keyboardType = KeyboardType.Email,
-            errorMessage = inputErrors["email"]
+            onValueChange = { /* No editable */ },
+            label = { Text("Email") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Email,
+                    contentDescription = "Email",
+                    tint = Color(0xFF6200EE)
+                )
+            },
+            readOnly = true,
+            enabled = false,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                disabledTextColor = LocalContentColor.current.copy(alpha = 0.8f),
+                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                disabledLeadingIconColor = Color(0xFF6200EE).copy(alpha = 0.7f)
+            )
         )
 
         // Fecha de nacimiento

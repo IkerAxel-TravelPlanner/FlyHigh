@@ -78,3 +78,50 @@ El sistema está diseñado de manera que cada entidad pueda mapearse fácilmente
 - **Gestión de Presupuesto**: Agregar seguimiento financiero a los viajes.
 - **Colaboradores**: Permitir que varios usuarios editen viajes.
 - **Modo Offline**: Habilitar acceso a los viajes sin conexión a internet.
+
+# 📦 FlyHigh - Database Design
+
+## 🗃️ Esquema de la Base de Datos
+
+### **users**
+| Campo             | Tipo     | Notas                          |
+|------------------|----------|--------------------------------|
+| id               | INTEGER  | PK, AUTOINCREMENT              |
+| firebaseUid      | TEXT     | Puede ser `null`              |
+| username         | TEXT     | ÚNICO, NO `null`              |
+| email            | TEXT     | NO `null`                     |
+| birthDate        | INTEGER  | Fecha en epoch millis         |
+| address          | TEXT     | NO `null`                     |
+| country          | TEXT     | NO `null`                     |
+| phoneNumber      | TEXT     | NO `null`                     |
+| acceptEmailsOffers | INTEGER | Booleano (`0` / `1`)          |
+
+### **trips**
+| Campo        | Tipo     | Notas                          |
+|--------------|----------|--------------------------------|
+| id           | INTEGER  | PK, AUTOINCREMENT              |
+| userId       | INTEGER  | FK → `users(id)` (ON DELETE CASCADE) |
+| title        | TEXT     | NO `null`                     |
+| destination  | TEXT     | NO `null`                     |
+| startDate    | INTEGER  | Epoch millis                  |
+| endDate      | INTEGER  | Epoch millis                  |
+| description  | TEXT     | NO `null`                     |
+| imageUrl     | TEXT     | Opcional                      |
+
+### **itinerary_items**
+| Campo        | Tipo     | Descripción                    |
+|--------------|----------|--------------------------------|
+| (definir campos específicos si lo deseas incluir aquí) |
+
+## 🧩 DAOs y Repositorios
+
+- `UserDao`: manejo de usuarios (inserción, búsqueda por email/username, etc.).
+- `TripDao`: inserción, actualización, borrado y consultas por usuario.
+- `UserRepository` / `TripRepository`: adaptan DAOs a modelos del dominio (`User`, `Trip`).
+
+## 🔄 Migración v1 → v2
+
+- Se creó tabla `users` y se migraron los `trips` para incluir `userId`.
+- Se insertó un usuario temporal (`migrated_user`) para mantener integridad referencial.
+
+```

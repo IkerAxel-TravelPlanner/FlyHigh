@@ -84,8 +84,10 @@ class EditProfileViewModel @Inject constructor(
         _uiState.update { it.copy(username = username) }
     }
 
+    // Email ahora es de solo lectura - este método no debería tener efecto real
     fun updateEmail(email: String) {
-        _uiState.update { it.copy(email = email) }
+        // No actualizamos el email en el uiState, esta función queda para mantener
+        // compatibilidad con la interfaz pero no hace nada
     }
 
     fun updateBirthDate(birthDate: Date) {
@@ -109,24 +111,18 @@ class EditProfileViewModel @Inject constructor(
     }
 
     fun validateInputs(): Boolean {
-        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
         val currentState = _uiState.value
 
-        val emailValid = currentState.email.matches(emailPattern.toRegex())
         val usernameValid = currentState.username.isNotBlank() && currentState.username.length >= 3
         val phoneValid = currentState.phoneNumber.isNotBlank() && currentState.phoneNumber.length >= 9
+        // Ya no validamos el email porque ahora es de solo lectura
 
-        return emailValid && usernameValid && phoneValid
+        return usernameValid && phoneValid
     }
 
     fun getInputErrors(): Map<String, String> {
         val errors = mutableMapOf<String, String>()
-        val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
         val currentState = _uiState.value
-
-        if (!currentState.email.matches(emailPattern.toRegex())) {
-            errors["email"] = "El email no tiene un formato válido"
-        }
 
         if (currentState.username.isBlank()) {
             errors["username"] = "El nombre de usuario no puede estar vacío"
@@ -159,7 +155,8 @@ class EditProfileViewModel @Inject constructor(
 
         val updatedUser = originalUser.copy(
             username = currentState.username,
-            email = currentState.email,
+            // Mantenemos el email original, no lo actualizamos con el del estado
+            email = originalUser.email,
             birthDate = currentState.birthDate,
             address = currentState.address,
             country = currentState.country,
