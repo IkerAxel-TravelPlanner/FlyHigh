@@ -3,6 +3,7 @@ package com.example.FlyHigh.ui.view
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -10,66 +11,45 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.FlyHigh.domain.model.User
+import com.example.FlyHigh.ui.viewmodel.ProfileViewModel
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController, userId: String? = null) {
+fun ProfileScreen(
+    navController: NavController,
+    userId: Long? = null,
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val auth = FirebaseAuth.getInstance()
-    val firestore = FirebaseFirestore.getInstance()
     val scrollState = rememberScrollState()
     val currentUser = auth.currentUser
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
-    // Show confirmation dialog state
+    // Estado para el diálogo de cierre de sesión
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var isLoading by remember { mutableStateOf(true) }
 
-    // User data state - inicializar con un User vacío para evitar null pointers
-    var userData by remember { mutableStateOf(User()) }
+    // Estado de carga y error
+    val uiState by viewModel.uiState.collectAsState()
 
-    // Determinar qué ID de usuario usar
-    val targetUserId = userId ?: currentUser?.uid
-
-    // Load user data from Firestore
-    LaunchedEffect(targetUserId) {
-        if (targetUserId != null) {
-            try {
-                val userSnapshot = firestore.collection("users")
-                    .document(targetUserId)
-                    .get()
-                    .await()
-
-                if (userSnapshot.exists()) {
-                    val user = userSnapshot.toObject(User::class.java)
-                    if (user != null) {
-                        userData = user
-                    }
-                }
-            } catch (e: Exception) {
-                // Handle error
-            } finally {
-                isLoading = false
-            }
-        } else {
-            isLoading = false
-        }
+    // Cargar los datos del usuario cuando se inicia la pantalla
+    LaunchedEffect(key1 = userId) {
+        viewModel.loadUserData(userId)
     }
-
-    // Mostrar botones de edición y cerrar sesión solo si es el perfil del usuario actual
-    val isCurrentUserProfile = userId == null || userId == currentUser?.uid
 
     Scaffold(
         topBar = {
@@ -88,131 +68,36 @@ fun ProfileScreen(navController: NavController, userId: String? = null) {
             )
         }
     ) { padding ->
-        if (isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color(0xFF6200EE))
+        when {
+            uiState.isLoading -> {
+                LoadingScreen(padding)
             }
-        } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .padding(top = padding.calculateTopPadding())
-                    .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Imagen de perfil (simulada como un círculo)
-                Surface(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .padding(bottom = 16.dp),
-                    shape = MaterialTheme.shapes.large,
-                    color = Color.Gray
-                ) {
-                    // Aquí se puede agregar una imagen de perfil real
-                }
-
-                // Información del usuario
-                if (userData.email.isNotEmpty()) {
-                    ProfileInfoSection(userData, dateFormatter)
-                } else {
-                    Text(
-                        text = "No se pudo cargar la información del usuario",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                if (isCurrentUserProfile) {
-                    // Botón para editar el perfil
-                    ElevatedButton(
-                        onClick = { navController.navigate("editProfile") },
-                        shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
-                        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Filled.Edit,
-                                contentDescription = "Editar perfil",
-                                tint = Color.White
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Editar Perfil", color = Color.White)
+            uiState.error != null -> {
+                ErrorScreen(uiState.error!!, padding)
+            }
+            uiState.userData != null -> {
+                ProfileContent(
+                    user = uiState.userData!!,
+                    dateFormatter = dateFormatter,
+                    isCurrentUserProfile = uiState.isCurrentUserProfile,
+                    onEditProfile = { navController.navigate("editProfile/${uiState.userData!!.id}") },
+                    onNavigateHome = {
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = true }
                         }
-                    }
-
-                    // Botón para volver a la pantalla de inicio
-                    ElevatedButton(
-                        onClick = {
-                            navController.navigate("home") {
-                                popUpTo("home") { inclusive = true }
-                            }
-                        },
-                        shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE)),
-                        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Filled.Home,
-                                contentDescription = "Volver al inicio",
-                                tint = Color.White
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Volver al Inicio", color = Color.White)
-                        }
-                    }
-
-                    // Botón de cerrar sesión
-                    ElevatedButton(
-                        onClick = { showLogoutDialog = true },
-                        shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE91E63)),
-                        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                Icons.Filled.ExitToApp,
-                                contentDescription = "Cerrar sesión",
-                                tint = Color.White
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Cerrar sesión", color = Color.White)
-                        }
-                    }
-                }
+                    },
+                    onLogoutRequest = { showLogoutDialog = true },
+                    padding = padding,
+                    scrollState = scrollState
+                )
+            }
+            else -> {
+                EmptyProfileScreen(padding)
             }
         }
     }
 
-    // Dialog de confirmación para cerrar sesión
+    // Diálogo de confirmación para cerrar sesión
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
@@ -221,7 +106,7 @@ fun ProfileScreen(navController: NavController, userId: String? = null) {
             confirmButton = {
                 Button(
                     onClick = {
-                        auth.signOut()
+                        viewModel.logout()
                         navController.navigate("login") {
                             popUpTo(0) { inclusive = true }
                         }
@@ -241,6 +126,183 @@ fun ProfileScreen(navController: NavController, userId: String? = null) {
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun LoadingScreen(padding: PaddingValues) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(color = Color(0xFF6200EE))
+    }
+}
+
+@Composable
+private fun ErrorScreen(errorMessage: String, padding: PaddingValues) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Error,
+                contentDescription = "Error",
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(64.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = errorMessage,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyProfileScreen(padding: PaddingValues) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = "Perfil vacío",
+                tint = Color.Gray,
+                modifier = Modifier.size(64.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "No se pudo cargar la información del perfil",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProfileContent(
+    user: User,
+    dateFormatter: SimpleDateFormat,
+    isCurrentUserProfile: Boolean,
+    onEditProfile: () -> Unit,
+    onNavigateHome: () -> Unit,
+    onLogoutRequest: () -> Unit,
+    padding: PaddingValues,
+    scrollState: androidx.compose.foundation.ScrollState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .padding(top = padding.calculateTopPadding())
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Foto de perfil
+        Surface(
+            modifier = Modifier
+                .size(120.dp)
+                .padding(bottom = 16.dp)
+                .clip(CircleShape),
+            color = Color(0xFFE0E0E0)
+        ) {
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Foto de perfil",
+                    tint = Color(0xFF6200EE),
+                    modifier = Modifier.size(60.dp)
+                )
+            }
+        }
+
+        // Información del usuario
+        ProfileInfoSection(user, dateFormatter)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        if (isCurrentUserProfile) {
+            // Botón para editar el perfil
+            ProfileButton(
+                text = "Editar Perfil",
+                icon = Icons.Filled.Edit,
+                color = Color(0xFF6200EE),
+                onClick = onEditProfile
+            )
+
+            // Botón para volver al inicio
+            ProfileButton(
+                text = "Volver al Inicio",
+                icon = Icons.Filled.Home,
+                color = Color(0xFF6200EE),
+                onClick = onNavigateHome
+            )
+
+            // Botón para cerrar sesión
+            ProfileButton(
+                text = "Cerrar Sesión",
+                icon = Icons.Filled.ExitToApp,
+                color = Color(0xFFE91E63),
+                onClick = onLogoutRequest
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProfileButton(
+    text: String,
+    icon: ImageVector,
+    color: Color,
+    onClick: () -> Unit
+) {
+    ElevatedButton(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.medium.copy(CornerSize(12.dp)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Icon(
+                icon,
+                contentDescription = text,
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = text, color = Color.White)
+        }
     }
 }
 

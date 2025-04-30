@@ -1,7 +1,6 @@
 package com.example.FlyHigh.ui.view
 
 import android.app.DatePickerDialog
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +29,7 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditProfileScreen(navController: NavController) {
+fun EditProfileScreen(navController: NavController, userId: Long?) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val auth = FirebaseAuth.getInstance()
