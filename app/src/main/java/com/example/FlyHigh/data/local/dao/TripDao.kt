@@ -18,15 +18,21 @@ interface TripDao {
     @Update
     suspend fun updateTrip(trip: TripEntity)
 
+    @Query("DELETE FROM trips WHERE id = :tripId AND userId = :userId")
+    suspend fun deleteTripById(tripId: Long, userId: Long)
+
+    // Esta función se mantiene por compatibilidad pero debería evitarse
     @Query("DELETE FROM trips WHERE id = :tripId")
     suspend fun deleteTripById(tripId: Long)
 
+    // Esta función se mantiene por compatibilidad pero debería evitarse
     @Query("SELECT * FROM trips ORDER BY startDate DESC")
     fun getAllTrips(): LiveData<List<TripEntity>>
 
     @Query("SELECT * FROM trips WHERE userId = :userId ORDER BY startDate DESC")
     fun getTripsByUserId(userId: Long): LiveData<List<TripEntity>>
 
+    // Esta función se mantiene por compatibilidad pero debería evitarse
     @Query("SELECT * FROM trips WHERE id = :tripId")
     fun getTripById(tripId: Long): Flow<TripEntity?>
 

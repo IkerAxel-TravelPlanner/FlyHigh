@@ -40,6 +40,7 @@ class TripRepository @Inject constructor(
 
     override suspend fun editTrip(
         tripId: Long,
+        userId: Long,
         name: String,
         startDate: Date,
         endDate: Date,
@@ -47,8 +48,9 @@ class TripRepository @Inject constructor(
         description: String,
         imageUrl: String?
     ) {
-        val tripEntity = tripDao.getTripById(tripId).firstOrNull()
-            ?: throw IllegalArgumentException("Trip with ID $tripId not found")
+        // Primero verificamos que el viaje pertenece al usuario
+        val tripEntity = tripDao.getTripByIdAndUserId(tripId, userId).firstOrNull()
+            ?: throw IllegalArgumentException("Trip with ID $tripId not found for user $userId")
 
         val updatedTrip = tripEntity.copy(
             title = name,
@@ -62,8 +64,8 @@ class TripRepository @Inject constructor(
         tripDao.updateTrip(updatedTrip)
     }
 
-    override suspend fun deleteTrip(tripId: Long) {
-        tripDao.deleteTripById(tripId)
+    override suspend fun deleteTrip(tripId: Long, userId: Long) {
+        tripDao.deleteTripById(tripId, userId)
     }
 
     override fun getTripsForUser(userId: Long): Flow<List<Trip>> {
@@ -72,8 +74,8 @@ class TripRepository @Inject constructor(
         }
     }
 
-    override fun getTripById(tripId: Long): Flow<Trip?> {
-        return tripDao.getTripById(tripId).map { it?.toTrip() }
+    override fun getTripById(tripId: Long, userId: Long): Flow<Trip?> {
+        return tripDao.getTripByIdAndUserId(tripId, userId).map { it?.toTrip() }
     }
 
     // Extension function to convert TripEntity to Trip domain model

@@ -62,10 +62,6 @@ class TravelViewModel @Inject constructor(
         viewModelScope.launch {
             if (auth.currentUser != null) {
                 loadCurrentUser()
-
-
-
-
             } else {
                 _currentUser.value = null
                 _currentUserId.value = null
@@ -138,7 +134,6 @@ class TravelViewModel @Inject constructor(
                 Log.e(TAG, "Error creating local user: ${e.message}", e)
                 throw e
             }
-
         }
     }
 
@@ -148,10 +143,12 @@ class TravelViewModel @Inject constructor(
     }
 
     fun getTripById(tripId: Long): Flow<TripEntity?> {
-        return if (_currentUserId.value != null) {
-            tripDao.getTripByIdAndUserId(tripId, _currentUserId.value!!)
+        val userId = _currentUserId.value
+        return if (userId != null) {
+            tripDao.getTripByIdAndUserId(tripId, userId)
         } else {
-            tripDao.getTripById(tripId)
+            // Si no hay usuario, devolvemos un flujo con null
+            MutableStateFlow(null)
         }
     }
 
@@ -232,12 +229,12 @@ class TravelViewModel @Inject constructor(
         }
     }
 
-
     // Actualizar un viaje existente
     fun updateTravel(updatedTrip: TripEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             // Asegurarse de que el usuario actual es el propietario del viaje
-            if (_currentUserId.value != null && updatedTrip.userId == _currentUserId.value) {
+            val currentUserId = _currentUserId.value
+            if (currentUserId != null && updatedTrip.userId == currentUserId) {
                 tripDao.updateTrip(updatedTrip)
                 Log.i(TAG, "Travel updated successfully: ${updatedTrip.title}")
 
@@ -252,17 +249,17 @@ class TravelViewModel @Inject constructor(
     // Eliminar un viaje
     fun deleteTravel(tripId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Comprobar propiedad antes de eliminar
-            tripDao.getTripById(tripId).collect { trip ->
-                if (trip != null && (_currentUserId.value == null || trip.userId == _currentUserId.value)) {
-                    tripDao.deleteTripById(tripId)
-                    Log.i(TAG, "Travel deleted successfully with ID: $tripId")
-
-                    // Forzar actualización después de eliminar
+            val userId = _currentUserId.value
+            if (userId != null) {
+                try {
+                    tripDao.deleteTripById(tripId, userId)
+                    Log.i(TAG, "Travel deleted successfully with ID: $tripId for user $userId")
                     refreshTrips()
-                } else {
-                    Log.e(TAG, "Failed to delete trip: Permission denied or trip not found")
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to delete trip: ${e.message}")
                 }
+            } else {
+                Log.e(TAG, "Failed to delete trip: No user logged in")
             }
         }
     }
@@ -274,10 +271,16 @@ class TravelViewModel @Inject constructor(
     // Agregar un itinerario a un viaje
     fun addItinerary(tripId: Long, title: String, description: String, location: String, date: Date, startTime: Date?, endTime: Date?, type: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            val userId = _currentUserId.value
+            if (userId == null) {
+                Log.e(TAG, "Failed to add itinerary: No user logged in")
+                return@launch
+            }
+
             // Verificar que el viaje pertenece al usuario actual
-            val trip = tripDao.getTripById(tripId)
+            val trip = tripDao.getTripByIdAndUserId(tripId, userId)
             trip.collect { tripEntity ->
-                if (tripEntity != null && (_currentUserId.value == null || tripEntity.userId == _currentUserId.value)) {
+                if (tripEntity != null) {
                     val itinerary = ItineraryItemEntity(
                         tripId = tripId,
                         title = title,
@@ -291,7 +294,7 @@ class TravelViewModel @Inject constructor(
                     itineraryItemDao.insertItineraryItem(itinerary)
                     Log.i(TAG, "Itinerary added successfully: $title")
                 } else {
-                    Log.e(TAG, "Failed to add itinerary: Permission denied or trip not found")
+                    Log.e(TAG, "Failed to add itinerary: Trip not found or permission denied")
                 }
             }
         }
@@ -300,37 +303,61 @@ class TravelViewModel @Inject constructor(
     // Actualizar un itinerario en un viaje
     fun updateItinerary(updatedItinerary: ItineraryItemEntity) {
         viewModelScope.launch(Dispatchers.IO) {
+            val userId = _currentUserId.value
+            if (userId == null) {
+                Log.e(TAG, "Failed to update itinerary: No user logged in")
+                return@launch
+            }
+
             // Verificar que el itinerario pertenece a un viaje del usuario actual
-            val trip = tripDao.getTripById(updatedItinerary.tripId)
+            val trip = tripDao.getTripByIdAndUserId(updatedItinerary.tripId, userId)
             trip.collect { tripEntity ->
-                if (tripEntity != null && (_currentUserId.value == null || tripEntity.userId == _currentUserId.value)) {
+                if (tripEntity != null) {
                     itineraryItemDao.updateItineraryItem(updatedItinerary)
                     Log.i(TAG, "Itinerary updated successfully: ${updatedItinerary.title}")
                 } else {
-                    Log.e(TAG, "Failed to update itinerary: Permission denied or trip not found")
+                    Log.e(TAG, "Failed to update itinerary: Trip not found or permission denied")
                 }
             }
         }
     }
 
     fun getItinerariesByTripId(tripId: Long): Flow<List<ItineraryItemEntity>> {
-        return itineraryItemDao.getItinerariesByTripId(tripId)
+        val userId = _currentUserId.value
+        // Primero verificamos que el viaje pertenece al usuario actual
+        return if (userId != null) {
+            tripDao.getTripByIdAndUserId(tripId, userId).combine(itineraryItemDao.getItinerariesByTripId(tripId)) { trip, itineraries ->
+                if (trip != null) {
+                    itineraries
+                } else {
+                    emptyList()
+                }
+            }
+        } else {
+            MutableStateFlow(emptyList())
+        }
     }
 
     // Eliminar un itinerario de un viaje
     fun deleteItinerary(itineraryId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Opcional: verificar que el itinerario pertenece a un viaje del usuario actual
+            val userId = _currentUserId.value
+            if (userId == null) {
+                Log.e(TAG, "Failed to delete itinerary: No user logged in")
+                return@launch
+            }
+
+            // Verificar que el itinerario pertenece a un viaje del usuario actual
             val itinerary = itineraryItemDao.getItineraryItemById(itineraryId)
             itinerary.collect { item ->
                 if (item != null) {
-                    val trip = tripDao.getTripById(item.tripId)
+                    val trip = tripDao.getTripByIdAndUserId(item.tripId, userId)
                     trip.collect { tripEntity ->
-                        if (tripEntity != null && (_currentUserId.value == null || tripEntity.userId == _currentUserId.value)) {
+                        if (tripEntity != null) {
                             itineraryItemDao.deleteItineraryItemById(itineraryId)
                             Log.i(TAG, "Itinerary deleted successfully with ID: $itineraryId")
                         } else {
-                            Log.e(TAG, "Failed to delete itinerary: Permission denied or trip not found")
+                            Log.e(TAG, "Failed to delete itinerary: Trip not found or permission denied")
                         }
                     }
                 }
@@ -435,6 +462,4 @@ class TravelViewModel @Inject constructor(
             }
         }
     }
-
-
 }

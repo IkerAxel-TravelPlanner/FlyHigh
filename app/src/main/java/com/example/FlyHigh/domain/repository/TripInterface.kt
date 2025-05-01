@@ -12,22 +12,23 @@ interface TripInterface {
         endDate: Date,
         destination: String,
         description: String,
-        imageUrl: String? = null
+        imageUrl: String?
     ): Long
 
     suspend fun editTrip(
         tripId: Long,
+        userId: Long,
         name: String,
         startDate: Date,
         endDate: Date,
         destination: String,
         description: String,
-        imageUrl: String? = null
+        imageUrl: String?
     )
 
-    suspend fun deleteTrip(tripId: Long)
+    suspend fun deleteTrip(tripId: Long, userId: Long)
 
     fun getTripsForUser(userId: Long): Flow<List<Trip>>
 
-    fun getTripById(tripId: Long): Flow<Trip?>
+    fun getTripById(tripId: Long, userId: Long): Flow<Trip?>
 }
