@@ -1,26 +1,31 @@
 package com.example.FlyHigh.ui.view
 
+import android.app.DatePickerDialog
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.FlyHigh.R
 import com.example.FlyHigh.ui.viewmodel.EditProfileUiState
 import com.example.FlyHigh.ui.viewmodel.EditProfileViewModel
-import com.google.android.material.datepicker.MaterialDatePicker
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,7 +39,6 @@ fun EditProfileScreen(
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-    val coroutineScope = rememberCoroutineScope()
 
     // Formato para mostrar la fecha
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
@@ -42,9 +46,6 @@ fun EditProfileScreen(
     // Estados para mostrar mensajes de error
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-
-    // Estado para el diálogo de fecha
-    var showDatePicker by remember { mutableStateOf(false) }
 
     // Estados para validación
     val inputErrors = remember { mutableStateMapOf<String, String>() }
@@ -62,29 +63,25 @@ fun EditProfileScreen(
         }
     }
 
-    // Mostrar diálogo de fecha cuando se solicita
-    if (showDatePicker) {
-        val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Selecciona tu fecha de nacimiento")
-            .setSelection(uiState.birthDate.time)
-            .build()
-
-        // No podemos mostrar el datePicker directamente en Compose,
-        // pero asumimos que hay una forma de hacerlo en la app real
-        showDatePicker = false
-    }
+    val primaryColor = Color(0xFF6200EE)
+    val surfaceColor = Color(0xFFF5F5F5)
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Editar Perfil") },
+                title = {
+                    Text(
+                        "Editar Perfil",
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Atrás")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF6200EE),
+                    containerColor = primaryColor,
                     titleContentColor = Color.White,
                     navigationIconContentColor = Color.White
                 ),
@@ -120,29 +117,54 @@ fun EditProfileScreen(
             )
         }
     ) { padding ->
-        when {
-            uiState.isLoading -> {
-                LoadingScreen(padding)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(surfaceColor)
+                .padding(padding)
+        ) {
+            when {
+                uiState.isLoading -> {
+                    LoadingScreen()
+                }
+                uiState.userData == null -> {
+                    ErrorScreen("No se pudo cargar los datos del perfil")
+                }
+                else -> {
+                    EditProfileContent(
+                        uiState = uiState,
+                        onUsernameChange = viewModel::updateUsername,
+                        onBirthDateChange = viewModel::updateBirthDate,
+                        onAddressChange = viewModel::updateAddress,
+                        onCountryChange = viewModel::updateCountry,
+                        onPhoneNumberChange = viewModel::updatePhoneNumber,
+                        onAcceptEmailsOffersChange = viewModel::updateAcceptEmailsOffers,
+                        context = context,
+                        dateFormatter = dateFormatter,
+                        scrollState = scrollState,
+                        inputErrors = inputErrors,
+                        viewModel = viewModel,
+                        navController = navController
+                    )
+                }
             }
-            uiState.userData == null -> {
-                ErrorScreen("No se pudo cargar los datos del perfil", padding)
-            }
-            else -> {
-                EditProfileContent(
-                    uiState = uiState,
-                    onUsernameChange = viewModel::updateUsername,
-                    onEmailChange = viewModel::updateEmail,
-                    onBirthDateChange = viewModel::updateBirthDate,
-                    onAddressChange = viewModel::updateAddress,
-                    onCountryChange = viewModel::updateCountry,
-                    onPhoneNumberChange = viewModel::updatePhoneNumber,
-                    onAcceptEmailsOffersChange = viewModel::updateAcceptEmailsOffers,
-                    onDatePickerRequest = { showDatePicker = true },
-                    dateFormatter = dateFormatter,
-                    padding = padding,
-                    scrollState = scrollState,
-                    inputErrors = inputErrors
-                )
+
+            // Success Snackbar
+            if (uiState.saveSuccess) {
+                Snackbar(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomCenter),
+                    containerColor = Color(0xFF4CAF50),
+                    contentColor = Color.White,
+                    action = {
+                        TextButton(onClick = { navController.popBackStack() }) {
+                            Text("OK", color = Color.White)
+                        }
+                    }
+                ) {
+                    Text("Perfil actualizado correctamente")
+                }
             }
         }
     }
@@ -151,12 +173,12 @@ fun EditProfileScreen(
     if (showErrorDialog) {
         AlertDialog(
             onDismissRequest = { showErrorDialog = false },
-            title = { Text("Error") },
+            title = { Text("Error", fontWeight = FontWeight.Bold) },
             text = { Text(errorMessage) },
             confirmButton = {
                 Button(
                     onClick = { showErrorDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
+                    colors = ButtonDefaults.buttonColors(containerColor = primaryColor)
                 ) {
                     Text("Aceptar")
                 }
@@ -166,23 +188,29 @@ fun EditProfileScreen(
 }
 
 @Composable
-private fun LoadingScreen(padding: PaddingValues) {
+private fun LoadingScreen() {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(color = Color(0xFF6200EE))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            CircularProgressIndicator(color = Color(0xFF6200EE))
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                "Cargando información del perfil...",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
 
 @Composable
-private fun ErrorScreen(errorMessage: String, padding: PaddingValues) {
+private fun ErrorScreen(errorMessage: String) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -212,143 +240,297 @@ private fun ErrorScreen(errorMessage: String, padding: PaddingValues) {
 private fun EditProfileContent(
     uiState: EditProfileUiState,
     onUsernameChange: (String) -> Unit,
-    onEmailChange: (String) -> Unit,
     onBirthDateChange: (Date) -> Unit,
     onAddressChange: (String) -> Unit,
     onCountryChange: (String) -> Unit,
     onPhoneNumberChange: (String) -> Unit,
     onAcceptEmailsOffersChange: (Boolean) -> Unit,
-    onDatePickerRequest: () -> Unit,
+    context: android.content.Context,
     dateFormatter: SimpleDateFormat,
-    padding: PaddingValues,
     scrollState: androidx.compose.foundation.ScrollState,
-    inputErrors: Map<String, String>
+    inputErrors: Map<String, String>,
+    viewModel: EditProfileViewModel,
+    navController: NavController
 ) {
+    val primaryColor = Color(0xFF6200EE)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding)
-            .padding(16.dp)
-            .verticalScroll(scrollState),
+            .verticalScroll(scrollState)
+            .padding(16.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        // Nombre de usuario
-        ProfileTextField(
-            value = uiState.username,
-            onValueChange = onUsernameChange,
-            label = "Nombre de usuario",
-            icon = Icons.Default.Person,
-            errorMessage = inputErrors["username"]
-        )
+        // Sección de información personal
+        SectionHeader(title = "Información Personal", icon = Icons.Default.Person)
 
-        // Email (ahora es de solo lectura)
-        OutlinedTextField(
-            value = uiState.email,
-            onValueChange = { /* No editable */ },
-            label = { Text("Email") },
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Email,
-                    contentDescription = "Email",
-                    tint = Color(0xFF6200EE)
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Nombre de usuario
+                ProfileTextField(
+                    value = uiState.username,
+                    onValueChange = onUsernameChange,
+                    label = "Nombre de usuario",
+                    icon = Icons.Default.AccountCircle,
+                    errorMessage = inputErrors["username"],
+                    primaryColor = primaryColor
                 )
-            },
-            readOnly = true,
-            enabled = false,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                disabledTextColor = LocalContentColor.current.copy(alpha = 0.8f),
-                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
-                disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                disabledLeadingIconColor = Color(0xFF6200EE).copy(alpha = 0.7f)
-            )
-        )
 
-        // Fecha de nacimiento
-        OutlinedTextField(
-            value = dateFormatter.format(uiState.birthDate),
-            onValueChange = { /* No editable directamente */ },
-            label = { Text("Fecha de nacimiento") },
+                // Email (no editable)
+                OutlinedTextField(
+                    value = uiState.email,
+                    onValueChange = { /* No editable */ },
+                    label = { Text("Email") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = "Email",
+                            tint = primaryColor.copy(alpha = 0.7f)
+                        )
+                    },
+                    readOnly = true,
+                    enabled = false,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        disabledTextColor = LocalContentColor.current.copy(alpha = 0.8f),
+                        disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        disabledLeadingIconColor = primaryColor.copy(alpha = 0.7f)
+                    )
+                )
+
+                // Fecha de nacimiento con DatePicker
+                val calendar = Calendar.getInstance()
+                calendar.time = uiState.birthDate
+
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+                val datePickerDialog = DatePickerDialog(
+                    context,
+                    R.style.DatePickerTheme,
+                    { _, selectedYear, selectedMonth, selectedDay ->
+                        calendar.set(selectedYear, selectedMonth, selectedDay)
+                        onBirthDateChange(calendar.time)
+                    },
+                    year, month, day
+                )
+
+                // Establecer límites de fecha (por ejemplo, no menores de 18 años)
+                val maxDate = Calendar.getInstance()
+                maxDate.add(Calendar.YEAR, -18)
+                datePickerDialog.datePicker.maxDate = maxDate.timeInMillis
+
+                OutlinedTextField(
+                    value = dateFormatter.format(uiState.birthDate),
+                    onValueChange = { /* No editable directamente */ },
+                    label = { Text("Fecha de nacimiento") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.CalendarToday,
+                            contentDescription = "Fecha de nacimiento",
+                            tint = primaryColor
+                        )
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = { datePickerDialog.show() }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Seleccionar fecha",
+                                tint = primaryColor
+                            )
+                        }
+                    },
+                    readOnly = true,
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = primaryColor,
+                        focusedLabelColor = primaryColor,
+                        cursorColor = primaryColor
+                    )
+                )
+            }
+        }
+
+        // Sección de contacto
+        Spacer(modifier = Modifier.height(16.dp))
+        SectionHeader(title = "Información de Contacto", icon = Icons.Default.Contacts)
+
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp),
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.CalendarToday,
-                    contentDescription = "Fecha de nacimiento",
-                    tint = Color(0xFF6200EE)
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                // Dirección
+                ProfileTextField(
+                    value = uiState.address,
+                    onValueChange = onAddressChange,
+                    label = "Dirección",
+                    icon = Icons.Default.Home,
+                    primaryColor = primaryColor
                 )
-            },
-            trailingIcon = {
-                IconButton(onClick = onDatePickerRequest) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Seleccionar fecha",
-                        tint = Color(0xFF6200EE)
+
+                // País
+                ProfileTextField(
+                    value = uiState.country,
+                    onValueChange = onCountryChange,
+                    label = "País",
+                    icon = Icons.Default.Public,
+                    primaryColor = primaryColor
+                )
+
+                // Teléfono
+                ProfileTextField(
+                    value = uiState.phoneNumber,
+                    onValueChange = onPhoneNumberChange,
+                    label = "Teléfono",
+                    icon = Icons.Default.Phone,
+                    keyboardType = KeyboardType.Phone,
+                    errorMessage = inputErrors["phone"],
+                    primaryColor = primaryColor
+                )
+            }
+        }
+
+        // Sección de preferencias
+        Spacer(modifier = Modifier.height(16.dp))
+        SectionHeader(title = "Preferencias", icon = Icons.Outlined.Notifications)
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MailOutline,
+                    contentDescription = "Email Ofertas",
+                    tint = primaryColor,
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Recibir ofertas por email",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Te informaremos sobre promociones especiales",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.Gray
                     )
                 }
-            },
-            readOnly = true,
-            enabled = false
-        )
 
-        // Dirección
-        ProfileTextField(
-            value = uiState.address,
-            onValueChange = onAddressChange,
-            label = "Dirección",
-            icon = Icons.Default.Home
-        )
-
-        // País
-        ProfileTextField(
-            value = uiState.country,
-            onValueChange = onCountryChange,
-            label = "País",
-            icon = Icons.Default.Public
-        )
-
-        // Teléfono
-        ProfileTextField(
-            value = uiState.phoneNumber,
-            onValueChange = onPhoneNumberChange,
-            label = "Teléfono",
-            icon = Icons.Default.Phone,
-            keyboardType = KeyboardType.Phone,
-            errorMessage = inputErrors["phone"]
-        )
-
-        // Preferencias
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Preferencias",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
-            Switch(
-                checked = uiState.acceptEmailsOffers,
-                onCheckedChange = onAcceptEmailsOffersChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color(0xFF6200EE),
-                    checkedTrackColor = Color(0xFF6200EE).copy(alpha = 0.5f)
+                Switch(
+                    checked = uiState.acceptEmailsOffers,
+                    onCheckedChange = onAcceptEmailsOffersChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = primaryColor,
+                        checkedTrackColor = primaryColor.copy(alpha = 0.5f)
+                    )
                 )
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Recibir ofertas por email",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            }
+        }
+
+        // Botón de guardar
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(
+            onClick = {
+                val errors = viewModel.getInputErrors()
+                if (errors.isEmpty()) {
+                    viewModel.saveProfile {
+                        // Navegar de vuelta al perfil después de guardar con éxito
+                        navController.popBackStack()
+                    }
+                } else {
+                    // Usar clear y putAll en una MutableMap
+                    if (inputErrors is MutableMap) {
+                        inputErrors.clear()
+                        inputErrors.putAll(errors)
+                    }
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = primaryColor),
+            shape = RoundedCornerShape(8.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+        ) {
+            if (uiState.isSaving) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Guardar",
+                    tint = Color.White
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("GUARDAR CAMBIOS", fontWeight = FontWeight.Bold)
+            }
         }
 
         // Espacio adicional al final para evitar que el teclado oculte los campos
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(50.dp))
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(vertical = 8.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            tint = Color(0xFF6200EE),
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF6200EE)
+        )
     }
 }
 
@@ -360,7 +542,8 @@ private fun ProfileTextField(
     label: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     keyboardType: KeyboardType = KeyboardType.Text,
-    errorMessage: String? = null
+    errorMessage: String? = null,
+    primaryColor: Color
 ) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         OutlinedTextField(
@@ -371,17 +554,18 @@ private fun ProfileTextField(
                 Icon(
                     imageVector = icon,
                     contentDescription = label,
-                    tint = Color(0xFF6200EE)
+                    tint = primaryColor
                 )
             },
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             isError = errorMessage != null,
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color(0xFF6200EE),
-                focusedLabelColor = Color(0xFF6200EE),
-                cursorColor = Color(0xFF6200EE)
-            )
+                focusedBorderColor = primaryColor,
+                focusedLabelColor = primaryColor,
+                cursorColor = primaryColor
+            ),
+            shape = RoundedCornerShape(8.dp)
         )
 
         if (errorMessage != null) {
@@ -394,3 +578,4 @@ private fun ProfileTextField(
         }
     }
 }
+

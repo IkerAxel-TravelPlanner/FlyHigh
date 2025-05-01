@@ -26,7 +26,7 @@ class EditProfileViewModel @Inject constructor(
     fun loadUserData(userId: Long?) {
         viewModelScope.launch {
             try {
-                _uiState.update { it.copy(isLoading = true, error = null) }
+                _uiState.update { it.copy(isLoading = true, error = null, saveSuccess = false) }
 
                 val targetId = userId ?: getUserIdFromFirebase()
 
@@ -86,8 +86,7 @@ class EditProfileViewModel @Inject constructor(
 
     // Email ahora es de solo lectura - este método no debería tener efecto real
     fun updateEmail(email: String) {
-        // No actualizamos el email en el uiState, esta función queda para mantener
-        // compatibilidad con la interfaz pero no hace nada
+        // No actualizamos el email en el uiState
     }
 
     fun updateBirthDate(birthDate: Date) {
@@ -155,7 +154,7 @@ class EditProfileViewModel @Inject constructor(
 
         val updatedUser = originalUser.copy(
             username = currentState.username,
-            // Mantenemos el email original, no lo actualizamos con el del estado
+            // Mantenemos el email original, no lo actualizamos
             email = originalUser.email,
             birthDate = currentState.birthDate,
             address = currentState.address,
