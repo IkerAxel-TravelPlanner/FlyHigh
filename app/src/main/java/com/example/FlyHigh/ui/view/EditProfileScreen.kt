@@ -578,4 +578,3 @@ private fun ProfileTextField(
         }
     }
 }
-
