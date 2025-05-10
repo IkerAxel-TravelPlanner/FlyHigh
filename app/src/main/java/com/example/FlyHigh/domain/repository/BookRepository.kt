@@ -13,7 +13,7 @@ class BookRepository @Inject constructor(
     private val api: BookApiService
 ) : BookInterface {
 
-    private val gid = "axel"                       // hard-coded group
+    private val gid = "G09"                       // hard-coded group
 
     override suspend fun list(): List<Book> =
         api.getBooks(gid).map { it.toDomain() }

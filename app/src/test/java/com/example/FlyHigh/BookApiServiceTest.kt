@@ -53,7 +53,7 @@ class BookApiServiceTest {
         mockWebServer.enqueue(mockResponse)
 
         // Act
-        val result: ResponseBodyDto = api.getHotelAvailability("axel")
+        val result: ResponseBodyDto = api.getHotelAvailability("G09")
 
         // Assert
         assertNotNull(result)
