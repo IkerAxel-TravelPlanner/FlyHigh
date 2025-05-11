@@ -106,6 +106,12 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
 
-    testImplementation("com.squareup.okhttp3:mockwebserver:5.0.0-alpha.11")
+    // Mockito
+    testImplementation ("org.mockito:mockito-core:4.0.0")
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    // Mockk
+    testImplementation ("io.mockk:mockk:1.12.4")
+
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
 }
