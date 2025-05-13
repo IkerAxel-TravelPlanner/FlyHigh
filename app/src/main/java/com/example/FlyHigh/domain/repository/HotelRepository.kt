@@ -39,3 +39,5 @@ class HotelRepository @Inject constructor(
         return response.ok
     }
 }
+
+//INITIAL TEST
