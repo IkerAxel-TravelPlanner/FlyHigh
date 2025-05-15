@@ -6,6 +6,7 @@ plugins {
     // HILT
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+
     // Firebase
     id("com.google.gms.google-services") version "4.4.2"
 }
@@ -20,7 +21,6 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -53,7 +53,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
+    implementation(platform(libs.androidx.compose.bom)) // BOM de Compose
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
@@ -63,30 +63,44 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.adapters)
+    implementation(libs.androidx.runtime.livedata)
 
-    // Firebase & otros
-    implementation(libs.firebase.auth)
+    // Coil para cargar imágenes en Compose ✅ AÑADIDO
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-analytics")
     implementation(libs.firebase.crashlytics.buildtools)
-    implementation(libs.transportation.consumer)
-    implementation(libs.protolite.well.known.types)
+    implementation(libs.firebase.firestore.ktx)
+
+    // Gson
     implementation("com.google.code.gson:gson:2.8.8")
 
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.material)
+    implementation(libs.google.transportation.consumer)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.rxjava2)
     implementation(libs.androidx.room.rxjava3)
     implementation(libs.androidx.room.guava)
-    testImplementation(libs.androidx.room.testing)
     implementation(libs.androidx.room.paging)
+    testImplementation(libs.androidx.room.testing)
+
+    // Material
+    implementation(libs.material)
 
     // HILT
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+
+    // Retrofit + OkHttp (API)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
 
     // Testing
     testImplementation(libs.junit)
@@ -97,21 +111,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // FIREBASE
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
-    implementation("com.google.firebase:firebase-analytics")
-
-    //API
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
-
-    // Mockito
-    testImplementation ("org.mockito:mockito-core:4.0.0")
-    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
-    // Mockk
-    testImplementation ("io.mockk:mockk:1.12.4")
-
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-
+    // Mockito y Mockk
+    testImplementation("org.mockito:mockito-core:4.0.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("io.mockk:mockk:1.12.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 }

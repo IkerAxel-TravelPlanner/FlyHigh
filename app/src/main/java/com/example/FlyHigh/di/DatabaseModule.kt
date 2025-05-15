@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.room.Room
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
 import com.example.FlyHigh.data.local.dao.TripDao
+import com.example.FlyHigh.data.local.dao.TripImageDao
 import com.example.FlyHigh.data.local.dao.UserDao
 import com.example.FlyHigh.data.local.database.AppDatabase
 import com.example.FlyHigh.data.local.database.DatabaseMigration
+import com.example.FlyHigh.domain.repository.TripImageInterface
+import com.example.FlyHigh.domain.repository.TripImageRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -47,4 +50,18 @@ object DatabaseModule {
     fun provideUserDao(appDatabase: AppDatabase): UserDao {
         return appDatabase.userDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideTripImageDao(appDatabase: AppDatabase): TripImageDao {
+        return appDatabase.tripImageDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTripImageRepository(dao: TripImageDao): TripImageInterface {
+        return TripImageRepository(dao)
+    }
+
+
 }

@@ -10,24 +10,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.FlyHigh.ui.view.*
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
-import com.example.FlyHigh.ui.view.CreateItineraryScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel? = null) {
-    // Verificar si hay un usuario autenticado con Firebase
     val userLoggedIn = FirebaseAuth.getInstance().currentUser != null
     val startDestination = if (userLoggedIn) "home" else "login"
-
-    // Si no se proporciona un viewModel, se puede manejar dentro de cada composable con hiltViewModel()
     val viewModel = travelViewModel ?: androidx.hilt.navigation.compose.hiltViewModel<TravelViewModel>()
 
     NavHost(navController = navController, startDestination = startDestination) {
 
+        // 🔐 Auth
         composable("login") { LoginScreen2(navController) }
         composable("register") { RegisterScreen(navController) }
-
-        // Nueva ruta para la pantalla de recuperación de contraseña
         composable(
             route = "forgot_password?email={email}",
             arguments = listOf(
@@ -42,13 +37,13 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
             ForgotPasswordScreen(navController, email)
         }
 
+        // 🏠 Inicio
         composable("home") { HomeScreenScaffold2(navController) }
 
-        // Fixed routes for profile screens
+        // 👤 Perfil
         composable("profile") {
             ProfileScreen(navController, null)
         }
-
         composable(
             "profile/{userId}",
             arguments = listOf(navArgument("userId") { type = NavType.LongType })
@@ -56,8 +51,6 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
             val userId = backStackEntry.arguments?.getLong("userId")
             ProfileScreen(navController, userId)
         }
-
-        // Ruta para editar perfil (FIXED)
         composable(
             "editProfile/{userId}",
             arguments = listOf(navArgument("userId") { type = NavType.LongType })
@@ -66,7 +59,7 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
             EditProfileScreen(navController, userId)
         }
 
-        // 📌 Configuración y Acerca de
+        // ⚙️ Ajustes y legales
         composable("about") { AboutScreen1(navController) }
         composable("about/details") { AboutScreen2(navController) }
         composable("about/terms") { TermsAndConditionsScreen(navController) }
@@ -75,35 +68,50 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
         composable("version") { VersionScreen(navController) }
         composable("language_settings") { LanguageSettingsScreen(navController, LocalContext.current) }
 
-        // 📌 NUEVAS PANTALLAS
+        // 🔔 Notificaciones y seguridad
         composable("notifications") { NotificationsScreen(navController) }
         composable("security_and_privacy") { SecurityAndPrivacyScreen(navController) }
         composable("advanced_settings") { AdvancedSettingsScreen(navController) }
 
-        // 📌 VIAJES
+        // ✈️ VIAJES
         composable("viajes") { TravelScreen(navController, viewModel) }
         composable("createViaje") { CreateTravelScreen(navController, viewModel) }
-        composable("viaje/{viajeId}", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
-            backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                TravelDetailScreen(navController, viewModel, viajeId)
-            }
-        }
-        composable("editViaje/{viajeId}", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
-            backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                EditTravelScreen(navController, viewModel, viajeId)
-            }
+
+        // ✅ TravelDetailScreen con timestamp (para forzar recarga)
+        composable(
+            route = "viaje/{viajeId}?ts={ts}",
+            arguments = listOf(
+                navArgument("viajeId") { type = NavType.StringType },
+                navArgument("ts") {
+                    type = NavType.StringType
+                    defaultValue = "0"
+                }
+            )
+        ) { backStackEntry ->
+            val viajeId = backStackEntry.arguments?.getString("viajeId") ?: return@composable
+            TravelDetailScreen(navController, viewModel, viajeId)
         }
 
-        // 📌 ITINERARIOS
-        composable("viaje/{viajeId}/itinerarios", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
-            backStackEntry.arguments?.getString("viajeId")?.let { viajeId ->
-                ItineraryScreen(navController, viewModel, viajeId)
-            }
+        composable("editViaje/{viajeId}",
+            arguments = listOf(navArgument("viajeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val viajeId = backStackEntry.arguments?.getString("viajeId") ?: return@composable
+            EditTravelScreen(navController, viewModel, viajeId)
         }
-        composable("viaje/{viajeId}/createItinerario", arguments = listOf(navArgument("viajeId") { type = NavType.StringType })) { backStackEntry ->
-            backStackEntry.arguments?.getString("viajeId")?.toLongOrNull()?.let { tripId ->
-                CreateItineraryScreen(navController, viewModel, tripId)
-            }
+
+        // 🗓️ ITINERARIOS
+        composable("viaje/{viajeId}/itinerarios",
+            arguments = listOf(navArgument("viajeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val viajeId = backStackEntry.arguments?.getString("viajeId") ?: return@composable
+            ItineraryScreen(navController, viewModel, viajeId)
+        }
+
+        composable("viaje/{viajeId}/createItinerario",
+            arguments = listOf(navArgument("viajeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val tripId = backStackEntry.arguments?.getString("viajeId")?.toLongOrNull() ?: -1L
+            CreateItineraryScreen(navController, viewModel, tripId)
         }
 
         composable(
@@ -124,14 +132,10 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
                     itineraryId = itineraryId.toLongOrNull() ?: -1L
                 )
             } else {
-                // Handle invalid arguments
-                LaunchedEffect(Unit) {
-                    navController.popBackStack()
-                }
+                LaunchedEffect(Unit) { navController.popBackStack() }
             }
         }
 
-        // Route for viewing itinerary details
         composable(
             route = "viaje/{viajeId}/itinerario/{itineraryId}/detail",
             arguments = listOf(
@@ -141,20 +145,11 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
         ) { backStackEntry ->
             val viajeId = backStackEntry.arguments?.getString("viajeId") ?: ""
             val itineraryId = backStackEntry.arguments?.getString("itineraryId") ?: ""
-
-            ItineraryDetailScreen(
-                navController = navController,
-                viewModel = viewModel,
-                viajeId = viajeId,
-                itineraryId = itineraryId
-            )
+            ItineraryDetailScreen(navController, viewModel, viajeId, itineraryId)
         }
 
-        // 📌 EXPLORAR
+        // 🔍 EXPLORAR
         composable("explore") { ExploreScreen(navController) }
-
-        composable("explore/details") {
-            ExploreDetailsScreen(navController)
-        }
+        composable("explore/details") { ExploreDetailsScreen(navController) }
     }
 }
