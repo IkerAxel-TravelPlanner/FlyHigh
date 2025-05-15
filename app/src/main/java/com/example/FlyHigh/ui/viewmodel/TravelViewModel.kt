@@ -12,33 +12,25 @@ import com.example.FlyHigh.data.local.dao.UserDao
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.data.local.entity.TripEntity
 import com.example.FlyHigh.data.local.entity.UserEntity
-import com.example.FlyHigh.domain.model.User
+import com.example.FlyHigh.domain.model.TripImage
+import com.example.FlyHigh.domain.repository.TripImageInterface
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
 import javax.inject.Inject
 
-/**
- * ViewModel para gestionar la lógica de negocio relacionada con los viajes y los itinerarios.
- * Proporciona métodos para interactuar con la base de datos a través de los DAOs.
- */
 @HiltViewModel
 class TravelViewModel @Inject constructor(
     private val tripDao: TripDao,
     private val itineraryItemDao: ItineraryItemDao,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val tripImageRepo: TripImageInterface
 ) : ViewModel() {
 
     private val TAG = "TravelViewModel"
@@ -52,12 +44,9 @@ class TravelViewModel @Inject constructor(
     private val _tripsRefreshTrigger = MutableStateFlow(0)
     val tripsRefreshTrigger: StateFlow<Int> = _tripsRefreshTrigger.asStateFlow()
 
-    // Agregamos un estado para manejar errores en el registro
     private val _registrationError = MutableStateFlow<String?>(null)
     val registrationError: StateFlow<String?> = _registrationError.asStateFlow()
 
-
-    // Agregamos un listener para los cambios de autenticación
     private val authStateListener = FirebaseAuth.AuthStateListener { auth ->
         viewModelScope.launch {
             if (auth.currentUser != null) {
@@ -70,12 +59,10 @@ class TravelViewModel @Inject constructor(
         }
     }
 
-
     init {
         FirebaseAuth.getInstance().addAuthStateListener(authStateListener)
         loadCurrentUser()
     }
-
 
     override fun onCleared() {
         super.onCleared()
@@ -87,24 +74,18 @@ class TravelViewModel @Inject constructor(
             val firebaseUser = FirebaseAuth.getInstance().currentUser
             if (firebaseUser != null) {
                 try {
-                    // Buscar el usuario en Room por su firebaseUid
                     var user = withContext(Dispatchers.IO) {
                         userDao.getUserByFirebaseUid(firebaseUser.uid)
                     }
-
-                    // Si no existe, crearlo automáticamente
                     if (user == null) {
                         val userId = createLocalUserFromFirebase(firebaseUser)
                         user = withContext(Dispatchers.IO) {
                             userDao.getUserByIdSuspend(userId)
                         }
                     }
-
                     _currentUser.value = user
                     _currentUserId.value = user?.id
                     refreshTrips()
-
-                    Log.d(TAG, "User loaded: ${user?.username} with ID ${user?.id}")
                 } catch (e: Exception) {
                     Log.e(TAG, "Error loading user: ${e.message}", e)
                 }
@@ -137,7 +118,6 @@ class TravelViewModel @Inject constructor(
         }
     }
 
-    // Método para forzar la actualización de la lista de viajes
     fun refreshTrips() {
         _tripsRefreshTrigger.value = _tripsRefreshTrigger.value + 1
     }
@@ -147,7 +127,6 @@ class TravelViewModel @Inject constructor(
         return if (userId != null) {
             tripDao.getTripByIdAndUserId(tripId, userId)
         } else {
-            // Si no hay usuario, devolvemos un flujo con null
             MutableStateFlow(null)
         }
     }
@@ -164,49 +143,25 @@ class TravelViewModel @Inject constructor(
         }.flowOn(Dispatchers.IO)
     }
 
-    // Agregar un viaje a la base de datos
     fun addTravel(title: String, destination: String, startDate: Date, endDate: Date, description: String, imageUrl: String?) {
         viewModelScope.launch {
             try {
-                // Obtén el usuario de Firebase
                 val firebaseUser = FirebaseAuth.getInstance().currentUser
+                if (firebaseUser == null) return@launch
 
-                if (firebaseUser == null) {
-                    Log.e(TAG, "Failed to add trip: No Firebase user logged in")
-                    return@launch
-                }
-
-                // Asegurarnos de que tenemos un usuario local
                 var userId = _currentUserId.value
-
                 if (userId == null) {
-                    // Intentar cargar el usuario primero
                     loadCurrentUser()
-
-                    // Esperar un momento para que se cargue
                     delay(500)
-
-                    // Verificar si se cargó
                     userId = _currentUserId.value
-
-                    // Si todavía no hay usuario, intentar crearlo
                     if (userId == null) {
                         val localUser = getUserByFirebaseUid(firebaseUser.uid)
-                        if (localUser != null) {
-                            userId = localUser.id
-                        } else {
-                            userId = createLocalUserFromFirebase(firebaseUser)
-                        }
+                        userId = localUser?.id ?: createLocalUserFromFirebase(firebaseUser)
                     }
                 }
 
-                // Verificar que tenemos un userId válido
-                if (userId == null || userId <= 0) {
-                    Log.e(TAG, "Failed to add trip: Invalid user ID")
-                    return@launch
-                }
+                if (userId == null || userId <= 0) return@launch
 
-                // A partir de aquí, usar el userId para crear el viaje
                 val trip = TripEntity(
                     userId = userId,
                     title = title,
@@ -216,12 +171,7 @@ class TravelViewModel @Inject constructor(
                     description = description,
                     imageUrl = imageUrl
                 )
-
-                val tripId = withContext(Dispatchers.IO) {
-                    tripDao.insertTrip(trip)
-                }
-
-                Log.i(TAG, "Travel added successfully: $title with ID $tripId for user $userId")
+                tripDao.insertTrip(trip)
                 refreshTrips()
             } catch (e: Exception) {
                 Log.e(TAG, "Error adding travel: ${e.message}", e)
@@ -229,37 +179,26 @@ class TravelViewModel @Inject constructor(
         }
     }
 
-    // Actualizar un viaje existente
     fun updateTravel(updatedTrip: TripEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Asegurarse de que el usuario actual es el propietario del viaje
             val currentUserId = _currentUserId.value
             if (currentUserId != null && updatedTrip.userId == currentUserId) {
                 tripDao.updateTrip(updatedTrip)
-                Log.i(TAG, "Travel updated successfully: ${updatedTrip.title}")
-
-                // Forzar actualización después de modificar
                 refreshTrips()
-            } else {
-                Log.e(TAG, "Failed to update trip: Permission denied")
             }
         }
     }
 
-    // Eliminar un viaje
     fun deleteTravel(tripId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = _currentUserId.value
             if (userId != null) {
                 try {
                     tripDao.deleteTripById(tripId, userId)
-                    Log.i(TAG, "Travel deleted successfully with ID: $tripId for user $userId")
                     refreshTrips()
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to delete trip: ${e.message}")
                 }
-            } else {
-                Log.e(TAG, "Failed to delete trip: No user logged in")
             }
         }
     }
@@ -268,18 +207,10 @@ class TravelViewModel @Inject constructor(
         return itineraryItemDao.getItineraryItemById(itineraryId)
     }
 
-    // Agregar un itinerario a un viaje
     fun addItinerary(tripId: Long, title: String, description: String, location: String, date: Date, startTime: Date?, endTime: Date?, type: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val userId = _currentUserId.value
-            if (userId == null) {
-                Log.e(TAG, "Failed to add itinerary: No user logged in")
-                return@launch
-            }
-
-            // Verificar que el viaje pertenece al usuario actual
-            val trip = tripDao.getTripByIdAndUserId(tripId, userId)
-            trip.collect { tripEntity ->
+            val userId = _currentUserId.value ?: return@launch
+            tripDao.getTripByIdAndUserId(tripId, userId).collect { tripEntity ->
                 if (tripEntity != null) {
                     val itinerary = ItineraryItemEntity(
                         tripId = tripId,
@@ -292,31 +223,17 @@ class TravelViewModel @Inject constructor(
                         type = type
                     )
                     itineraryItemDao.insertItineraryItem(itinerary)
-                    Log.i(TAG, "Itinerary added successfully: $title")
-                } else {
-                    Log.e(TAG, "Failed to add itinerary: Trip not found or permission denied")
                 }
             }
         }
     }
 
-    // Actualizar un itinerario en un viaje
     fun updateItinerary(updatedItinerary: ItineraryItemEntity) {
         viewModelScope.launch(Dispatchers.IO) {
-            val userId = _currentUserId.value
-            if (userId == null) {
-                Log.e(TAG, "Failed to update itinerary: No user logged in")
-                return@launch
-            }
-
-            // Verificar que el itinerario pertenece a un viaje del usuario actual
-            val trip = tripDao.getTripByIdAndUserId(updatedItinerary.tripId, userId)
-            trip.collect { tripEntity ->
+            val userId = _currentUserId.value ?: return@launch
+            tripDao.getTripByIdAndUserId(updatedItinerary.tripId, userId).collect { tripEntity ->
                 if (tripEntity != null) {
                     itineraryItemDao.updateItineraryItem(updatedItinerary)
-                    Log.i(TAG, "Itinerary updated successfully: ${updatedItinerary.title}")
-                } else {
-                    Log.e(TAG, "Failed to update itinerary: Trip not found or permission denied")
                 }
             }
         }
@@ -324,40 +241,24 @@ class TravelViewModel @Inject constructor(
 
     fun getItinerariesByTripId(tripId: Long): Flow<List<ItineraryItemEntity>> {
         val userId = _currentUserId.value
-        // Primero verificamos que el viaje pertenece al usuario actual
         return if (userId != null) {
-            tripDao.getTripByIdAndUserId(tripId, userId).combine(itineraryItemDao.getItinerariesByTripId(tripId)) { trip, itineraries ->
-                if (trip != null) {
-                    itineraries
-                } else {
-                    emptyList()
+            tripDao.getTripByIdAndUserId(tripId, userId)
+                .combine(itineraryItemDao.getItinerariesByTripId(tripId)) { trip, itineraries ->
+                    if (trip != null) itineraries else emptyList()
                 }
-            }
         } else {
             MutableStateFlow(emptyList())
         }
     }
 
-    // Eliminar un itinerario de un viaje
     fun deleteItinerary(itineraryId: Long) {
         viewModelScope.launch(Dispatchers.IO) {
-            val userId = _currentUserId.value
-            if (userId == null) {
-                Log.e(TAG, "Failed to delete itinerary: No user logged in")
-                return@launch
-            }
-
-            // Verificar que el itinerario pertenece a un viaje del usuario actual
-            val itinerary = itineraryItemDao.getItineraryItemById(itineraryId)
-            itinerary.collect { item ->
-                if (item != null) {
-                    val trip = tripDao.getTripByIdAndUserId(item.tripId, userId)
-                    trip.collect { tripEntity ->
+            val userId = _currentUserId.value ?: return@launch
+            itineraryItemDao.getItineraryItemById(itineraryId).collect { item ->
+                item?.let {
+                    tripDao.getTripByIdAndUserId(it.tripId, userId).collect { tripEntity ->
                         if (tripEntity != null) {
                             itineraryItemDao.deleteItineraryItemById(itineraryId)
-                            Log.i(TAG, "Itinerary deleted successfully with ID: $itineraryId")
-                        } else {
-                            Log.e(TAG, "Failed to delete itinerary: Trip not found or permission denied")
                         }
                     }
                 }
@@ -365,7 +266,6 @@ class TravelViewModel @Inject constructor(
         }
     }
 
-    // Métodos de gestión de usuarios
     suspend fun registerUser(
         username: String,
         email: String,
@@ -378,11 +278,9 @@ class TravelViewModel @Inject constructor(
     ): Long {
         return withContext(Dispatchers.IO) {
             try {
-                // Verificar si el usuario ya existe por firebaseUid
                 if (firebaseUid != null) {
                     val existingUser = userDao.getUserByFirebaseUid(firebaseUid)
                     if (existingUser != null) {
-                        // Actualizar el usuario existente en lugar de crear uno nuevo
                         val updatedUser = existingUser.copy(
                             username = username,
                             email = email,
@@ -398,13 +296,10 @@ class TravelViewModel @Inject constructor(
                         return@withContext updatedUser.id
                     }
                 }
-
-                // Comprobar si el nombre de usuario ya existe (solo si es un usuario nuevo)
                 if (userDao.isUsernameExists(username)) {
                     throw IllegalArgumentException("El nombre de usuario ya está en uso")
                 }
 
-                // Crear nuevo usuario
                 val userEntity = UserEntity(
                     username = username,
                     email = email,
@@ -415,15 +310,11 @@ class TravelViewModel @Inject constructor(
                     acceptEmailsOffers = acceptEmailsOffers,
                     firebaseUid = firebaseUid
                 )
-
                 val userId = userDao.insertUser(userEntity)
-
-                // Actualizar el usuario actual si corresponde
                 if (FirebaseAuth.getInstance().currentUser?.uid == firebaseUid) {
                     _currentUser.postValue(userEntity.copy(id = userId))
                     _currentUserId.value = userId
                 }
-
                 _registrationError.value = null
                 userId
             } catch (e: Exception) {
@@ -449,17 +340,31 @@ class TravelViewModel @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 userDao.updateUser(userEntity)
-
-                // Si es el usuario actual, actualizar el estado
                 if (userEntity.id == _currentUserId.value) {
                     _currentUser.postValue(userEntity)
                 }
-
                 true
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating user: ${e.message}", e)
                 false
             }
+        }
+    }
+
+    // NUEVO: imágenes del viaje
+    private val _tripImages = MutableLiveData<List<TripImage>>(emptyList())
+    val tripImages: LiveData<List<TripImage>> = _tripImages
+
+    fun loadImagesForTrip(tripId: Long) {
+        viewModelScope.launch {
+            _tripImages.value = tripImageRepo.getImages(tripId)
+        }
+    }
+
+    fun saveImageForTrip(tripId: Long, uri: String) {
+        viewModelScope.launch {
+            tripImageRepo.saveImage(tripId, uri)
+            loadImagesForTrip(tripId)
         }
     }
 }
