@@ -3,6 +3,7 @@ package com.example.FlyHigh.domain.repository
 import com.example.FlyHigh.domain.model.Availability
 import com.example.FlyHigh.domain.model.Hotel
 import com.example.FlyHigh.domain.model.ReserveRequest
+import com.example.FlyHigh.data.remote.dto.ReservationDto
 
 interface HotelInterface {
 
@@ -22,4 +23,7 @@ interface HotelInterface {
 
     /** Cancel a reservation. */
     suspend fun cancelReservation(reserveRequest: ReserveRequest): Boolean
+
+    /** Get reservations by guest email. */
+    suspend fun getReservations(guestEmail: String? = null): List<ReservationDto>
 }

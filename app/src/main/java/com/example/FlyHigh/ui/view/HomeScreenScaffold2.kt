@@ -1,8 +1,11 @@
+
 package com.example.FlyHigh.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -91,12 +94,28 @@ fun HomeScreenScaffold2(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            HeaderImage()
+
             Spacer(modifier = Modifier.height(16.dp))
             TitleText("¡Organiza tu próximo viaje!")
+            //HeaderImage()
+
+            // Nuevo card para búsqueda de hoteles
+            FeatureCard(
+                title = "Buscar Hoteles",
+                description = "Encuentra el alojamiento perfecto para tu viaje.",
+                imageRes = R.drawable.imagen_hotel,
+                navController = navController,
+                route = "hotel_search"
+            )
+
+
+
             Spacer(modifier = Modifier.height(16.dp))
             QuickAccessRow(navController)
             Spacer(modifier = Modifier.height(24.dp))
+
+
+
             FeatureCard("Descubre lugares increíbles", "Explora destinos únicos.", R.drawable.imagen1, navController, "explore")
             FeatureCard("Gestiona tus itinerarios", "Organiza tus actividades.", R.drawable.imagen7, navController, "viajes")
         }
@@ -106,7 +125,7 @@ fun HomeScreenScaffold2(navController: NavController) {
 @Composable
 fun HeaderImage() {
     Image(
-        painter = painterResource(id = R.drawable.imagen1),
+        painter = painterResource(id = R.drawable.imagen_header),
         contentDescription = null,
         modifier = Modifier
             .fillMaxWidth()
@@ -128,26 +147,33 @@ fun TitleText(text: String) {
 @Composable
 fun QuickAccessRow(navController: NavController) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Añadido un tercer QuickAccessCard para hoteles
         QuickAccessCard("Mis Viajes", Icons.Filled.List) { navController.navigate("viajes") }
         QuickAccessCard("Explorar", Icons.Filled.Explore) { navController.navigate("explore") }
+        QuickAccessCard("Hoteles", Icons.Filled.Hotel) { navController.navigate("hotel_search") }
     }
 }
 
 @Composable
 fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onClick: () -> Unit) {
     ElevatedCard(
-        modifier = Modifier.size(150.dp),
+        modifier = Modifier
+            .height(110.dp),
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
+            Icon(icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = title, fontWeight = FontWeight.Bold)
         }
@@ -157,7 +183,9 @@ fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.Ima
 @Composable
 fun FeatureCard(title: String, description: String, imageRes: Int, navController: NavController, route: String) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
         onClick = { navController.navigate(route) }
     ) {

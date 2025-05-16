@@ -35,4 +35,28 @@ data class ReservationResponseDto(
     val ok: Boolean,
     val message: String,
     @SerializedName("reservation_id") val reservationId: String?
+
+)
+
+data class ReservationDto(
+    @SerializedName("id")
+    val id: String? = null,
+    @SerializedName("hotel_id")
+    val hotelId: String,
+    @SerializedName("room_id")
+    val roomId: String,
+    @SerializedName("start_date")
+    val startDate: String,
+    @SerializedName("end_date")
+    val endDate: String,
+    @SerializedName("guest_name")
+    val guestName: String,
+    @SerializedName("guest_email")
+    val guestEmail: String
+)
+
+data class ReservationResponseBody(
+    val message: String,
+    val nigths: Int,
+    val reservation: ReservationDto
 )

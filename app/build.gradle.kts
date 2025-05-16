@@ -116,4 +116,8 @@ dependencies {
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     testImplementation("io.mockk:mockk:1.12.4")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+
+    // MaxKeppeler Sheets - Corrección de importación
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.1.0")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.1.0")
 }

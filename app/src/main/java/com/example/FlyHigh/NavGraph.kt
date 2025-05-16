@@ -99,6 +99,31 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
             EditTravelScreen(navController, viewModel, viajeId)
         }
 
+        // 🏨 HOTELES
+        composable("hotel_search") {
+            HotelSearchScreen(navController)
+        }
+
+        composable(
+            route = "hotel_detail/{hotelId}?startDate={startDate}&endDate={endDate}",
+            arguments = listOf(
+                navArgument("hotelId") { type = NavType.StringType },
+                navArgument("startDate") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                },
+                navArgument("endDate") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) { backStackEntry ->
+            val hotelId = backStackEntry.arguments?.getString("hotelId") ?: return@composable
+            val startDate = backStackEntry.arguments?.getString("startDate") ?: ""
+            val endDate = backStackEntry.arguments?.getString("endDate") ?: ""
+            HotelDetailScreen(navController, hotelId, startDate, endDate)
+        }
+
         // 🗓️ ITINERARIOS
         composable("viaje/{viajeId}/itinerarios",
             arguments = listOf(navArgument("viajeId") { type = NavType.StringType })

@@ -2,6 +2,7 @@ package com.example.FlyHigh.data.remote.api
 
 import com.example.FlyHigh.data.remote.dto.AvailabilityResponseDto
 import com.example.FlyHigh.data.remote.dto.HotelDto
+import com.example.FlyHigh.data.remote.dto.ReservationResponseBody
 import com.example.FlyHigh.data.remote.dto.ReservationResponseDto
 import com.example.FlyHigh.data.remote.dto.ReserveRequestDto
 import retrofit2.http.Body
@@ -29,7 +30,7 @@ interface HotelApiService {
     suspend fun reserveRoom(
         @Path("group_id") groupId: String,
         @Body reserveRequest: ReserveRequestDto
-    ): ReservationResponseDto
+    ): ReservationResponseBody
 
     @POST("hotels/{group_id}/cancel")
     suspend fun cancelReservation(
