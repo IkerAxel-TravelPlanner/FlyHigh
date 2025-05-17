@@ -23,21 +23,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
+import com.example.FlyHigh.ui.viewmodel.ReservationViewModel
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel, viajeId: String) {
+fun TravelDetailScreen(
+    navController: NavController,
+    viewModel: TravelViewModel,
+    reservationViewModel: ReservationViewModel = androidx.hilt.navigation.compose.hiltViewModel(),
+    viajeId: String
+) {
     val context = LocalContext.current
     val viajeIdLong = viajeId.toLongOrNull() ?: -1L
 
     val viaje by viewModel.getTripById(viajeIdLong).collectAsState(initial = null)
     val itinerarios by viewModel.getItinerariesByTripId(viajeIdLong).collectAsState(initial = emptyList())
     val tripImages by viewModel.tripImages.observeAsState(emptyList())
+    val reservations by reservationViewModel.getReservationByTripId(viajeIdLong).collectAsState(initial = null)
+
 
     LaunchedEffect(viajeIdLong) {
         viewModel.loadImagesForTrip(viajeIdLong)
@@ -53,6 +62,8 @@ fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel,
             viewModel.saveImageForTrip(viajeIdLong, uri.toString())
         }
     }
+
+
 
     if (viaje == null) {
         Box(
@@ -128,6 +139,41 @@ fun TravelDetailScreen(navController: NavController, viewModel: TravelViewModel,
                     }
                 }
             }
+
+            if (reservations != null) {
+                item {
+                    Text("Reserva de Hotel", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            reservations?.let { reservation ->
+                                Text("Hotel: ${reservation.hotelName}", fontWeight = FontWeight.Bold)
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("Habitación: ${reservation.roomType}")
+                                Text("Check-in: ${reservation.checkIn}")
+                                Text("Check-out: ${reservation.checkOut}")
+                                reservation.imageUrl?.let { url ->
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    println("Reservation Image URL: ${reservation.imageUrl}")
+                                    Image(
+                                        painter = rememberAsyncImagePainter(url),
+                                        contentDescription = "Hotel Image",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(180.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
 
             item {
                 Text(text = "Itinerarios:", style = MaterialTheme.typography.headlineSmall)

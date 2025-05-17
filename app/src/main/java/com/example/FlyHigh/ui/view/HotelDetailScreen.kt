@@ -31,6 +31,7 @@ import com.example.FlyHigh.ui.viewmodel.ReservationViewModel
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.FlyHigh.utils.asFullUrl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -267,6 +268,9 @@ fun HotelDetailScreen(
                                             showBookingDialog = false
                                             showSuccessDialog = true
 
+                                            val imageUrlRaw = selectedRoom?.images?.firstOrNull()
+                                            val imageUrl = imageUrlRaw?.asFullUrl()
+
                                             reservationViewModel.addReservation(
                                                 ReservationEntity(
                                                     id = 0,
@@ -275,7 +279,7 @@ fun HotelDetailScreen(
                                                     roomType = selectedRoom?.roomType ?: "",
                                                     checkIn = startDate,
                                                     checkOut = endDate,
-                                                    imageUrl = selectedRoom?.images?.firstOrNull(),
+                                                    imageUrl = imageUrl,
                                                     reservationId = resId
                                                 )
                                             )

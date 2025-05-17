@@ -45,4 +45,6 @@ interface HotelApiService {
         @Query("guest_email") guestEmail: String? = null
     ): List<ReservationDto>
 
+    @DELETE("reservations/{res_id}")
+    suspend fun cancelReservationById(@Path("res_id") resId: String)
 }

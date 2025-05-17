@@ -69,6 +69,15 @@ class HotelRepository @Inject constructor(
         }
     }
 
+    suspend fun cancelReservationById(resId: String): Boolean {
+        return try {
+            api.cancelReservationById(resId)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 }
 
 //FUNCIONA

@@ -88,7 +88,12 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
             )
         ) { backStackEntry ->
             val viajeId = backStackEntry.arguments?.getString("viajeId") ?: return@composable
-            TravelDetailScreen(navController, viewModel, viajeId)
+
+            TravelDetailScreen(
+                navController = navController,
+                viewModel = viewModel,
+                viajeId = viajeId
+            )
         }
 
         composable("editViaje/{viajeId}",

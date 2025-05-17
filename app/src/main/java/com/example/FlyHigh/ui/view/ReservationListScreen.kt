@@ -49,7 +49,14 @@ fun ReservationListScreen(
                     .fillMaxSize()
             ) {
                 items(reservations) { res ->
-                    ReservationCard(res, onDelete = { viewModel.deleteReservation(res) })
+                    ReservationCard(res, onDelete = {
+                        viewModel.cancelReservation(res) { success ->
+                            if (!success) {
+                                // puedes mostrar un Toast si quieres
+                                println("No se pudo cancelar la reserva en la API")
+                            }
+                        }
+                    })
                 }
             }
         }
