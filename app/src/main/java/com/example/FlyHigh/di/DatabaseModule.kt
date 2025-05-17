@@ -3,11 +3,13 @@ package com.example.FlyHigh.di
 import android.content.Context
 import androidx.room.Room
 import com.example.FlyHigh.data.local.dao.ItineraryItemDao
+import com.example.FlyHigh.data.local.dao.ReservationDao
 import com.example.FlyHigh.data.local.dao.TripDao
 import com.example.FlyHigh.data.local.dao.TripImageDao
 import com.example.FlyHigh.data.local.dao.UserDao
 import com.example.FlyHigh.data.local.database.AppDatabase
 import com.example.FlyHigh.data.local.database.DatabaseMigration
+import com.example.FlyHigh.domain.repository.ReservationRepository
 import com.example.FlyHigh.domain.repository.TripImageInterface
 import com.example.FlyHigh.domain.repository.TripImageRepository
 import dagger.Module
@@ -29,7 +31,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "flyhigh_database"
         )
-            .addMigrations(DatabaseMigration.MIGRATION_1_2)
+            .fallbackToDestructiveMigration()
             .build()
     }
 
@@ -62,6 +64,18 @@ object DatabaseModule {
     fun provideTripImageRepository(dao: TripImageDao): TripImageInterface {
         return TripImageRepository(dao)
     }
+    @Provides
+    @Singleton
+    fun provideReservationDao(appDatabase: AppDatabase): ReservationDao {
+        return appDatabase.reservationDao()
+    }
+    @Provides
+    @Singleton
+    fun provideReservationRepository(dao: ReservationDao): ReservationRepository {
+        return ReservationRepository(dao)
+    }
+
+
 
 
 }

@@ -77,7 +77,6 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
         composable("viajes") { TravelScreen(navController, viewModel) }
         composable("createViaje") { CreateTravelScreen(navController, viewModel) }
 
-        // ✅ TravelDetailScreen con timestamp (para forzar recarga)
         composable(
             route = "viaje/{viajeId}?ts={ts}",
             arguments = listOf(
@@ -176,5 +175,10 @@ fun NavGraph(navController: NavHostController, travelViewModel: TravelViewModel?
         // 🔍 EXPLORAR
         composable("explore") { ExploreScreen(navController) }
         composable("explore/details") { ExploreDetailsScreen(navController) }
+
+        // ✅ NUEVA RUTA: RESERVAS
+        composable("reservations") {
+            ReservationListScreen(navController)
+        }
     }
 }

@@ -1,11 +1,8 @@
-
 package com.example.FlyHigh.ui.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,7 +46,6 @@ fun HomeScreenScaffold2(navController: NavController) {
                         expanded = showSettingsMenu,
                         onDismissRequest = { showSettingsMenu = false }
                     ) {
-                        // Definir las opciones con sus nombres correspondientes
                         val menuItems = listOf(
                             Triple("about", Icons.Filled.Info, "Acerca de"),
                             Triple("profile", Icons.Filled.Person, "Perfil"),
@@ -94,12 +90,10 @@ fun HomeScreenScaffold2(navController: NavController) {
                 .verticalScroll(rememberScrollState())
                 .background(MaterialTheme.colorScheme.background)
         ) {
-
             Spacer(modifier = Modifier.height(16.dp))
             TitleText("¡Organiza tu próximo viaje!")
-            //HeaderImage()
 
-            // Nuevo card para búsqueda de hoteles
+            // Tarjeta: Buscar Hoteles
             FeatureCard(
                 title = "Buscar Hoteles",
                 description = "Encuentra el alojamiento perfecto para tu viaje.",
@@ -108,13 +102,18 @@ fun HomeScreenScaffold2(navController: NavController) {
                 route = "hotel_search"
             )
 
-
+            // ✅ NUEVA TARJETA: Mis Reservas
+            FeatureCard(
+                title = "Mis Reservas",
+                description = "Consulta y gestiona tus reservas de hotel.",
+                imageRes = R.drawable.imagen_reserva, // Usa cualquier imagen válida de tu proyecto
+                navController = navController,
+                route = "reservations"
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
             QuickAccessRow(navController)
             Spacer(modifier = Modifier.height(24.dp))
-
-
 
             FeatureCard("Descubre lugares increíbles", "Explora destinos únicos.", R.drawable.imagen1, navController, "explore")
             FeatureCard("Gestiona tus itinerarios", "Organiza tus actividades.", R.drawable.imagen7, navController, "viajes")
@@ -152,7 +151,6 @@ fun QuickAccessRow(navController: NavController) {
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Añadido un tercer QuickAccessCard para hoteles
         QuickAccessCard("Mis Viajes", Icons.Filled.List) { navController.navigate("viajes") }
         QuickAccessCard("Explorar", Icons.Filled.Explore) { navController.navigate("explore") }
         QuickAccessCard("Hoteles", Icons.Filled.Hotel) { navController.navigate("hotel_search") }

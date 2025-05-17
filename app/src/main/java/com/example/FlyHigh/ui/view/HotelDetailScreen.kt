@@ -6,11 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,17 +16,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.FlyHigh.domain.model.Availability
+import com.example.FlyHigh.data.local.entity.ReservationEntity
+import com.example.FlyHigh.data.local.entity.TripEntity
 import com.example.FlyHigh.domain.model.Hotel
 import com.example.FlyHigh.domain.model.ReserveRequest
 import com.example.FlyHigh.domain.model.Room
 import com.example.FlyHigh.ui.viewmodel.HotelViewModel
+import com.example.FlyHigh.ui.viewmodel.ReservationViewModel
+import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -46,44 +44,44 @@ fun HotelDetailScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    // ViewModels
+    val travelViewModel = hiltViewModel<TravelViewModel>()
+    val reservationViewModel = hiltViewModel<ReservationViewModel>()
+
     // State for hotel data
     val availabilityResults by viewModel.availabilityResults.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    // Guest information state
+    // Booking states
     var guestName by remember { mutableStateOf("") }
     var guestEmail by remember { mutableStateOf("") }
     var selectedRoomId by remember { mutableStateOf<String?>(null) }
     var selectedRoom by remember { mutableStateOf<Room?>(null) }
-
-    // Form validation state
     var nameError by remember { mutableStateOf<String?>(null) }
     var emailError by remember { mutableStateOf<String?>(null) }
-
-    // Booking states
     var isBookingInProgress by remember { mutableStateOf(false) }
     var showBookingDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
     var reservationId by remember { mutableStateOf<String?>(null) }
 
+    // Trip selector
+    val trips by travelViewModel.getAllTrips().collectAsState(initial = emptyList())
+    var selectedTrip by remember { mutableStateOf<TripEntity?>(null) }
+    var expanded by remember { mutableStateOf(false) }
+
     // Load hotel data
     LaunchedEffect(hotelId, startDate, endDate) {
-        viewModel.checkAvailability(
-            startDate = startDate,
-            endDate = endDate,
-            hotelId = hotelId
-        )
+        viewModel.checkAvailability(startDate = startDate, endDate = endDate, hotelId = hotelId)
     }
 
-    // Show error if present
+    // Show error
     LaunchedEffect(error) {
         if (error.isNotEmpty()) {
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
 
-    // Get the selected hotel from availability results
     val hotel = availabilityResults?.hotels?.firstOrNull { it.id == hotelId }
 
     Scaffold(
@@ -98,15 +96,9 @@ fun HotelDetailScreen(
             )
         }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
             } else {
                 hotel?.let {
                     HotelDetailContent(
@@ -116,7 +108,6 @@ fun HotelDetailScreen(
                         onRoomSelected = { room ->
                             selectedRoom = room
                             selectedRoomId = room.id
-                            // Clear previous form data
                             guestName = ""
                             guestEmail = ""
                             nameError = null
@@ -124,35 +115,24 @@ fun HotelDetailScreen(
                             showBookingDialog = true
                         }
                     )
-                } ?: run {
-                    Text(
-                        text = "Hotel not found",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+                } ?: Text("Hotel not found", modifier = Modifier.align(Alignment.Center))
             }
         }
     }
 
-    // Booking Dialog
     if (showBookingDialog) {
         AlertDialog(
             onDismissRequest = {
                 if (!isBookingInProgress) showBookingDialog = false
             },
             title = {
-                Text(
-                    text = "Complete Your Booking",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text("Complete Your Booking", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             },
             text = {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Selected room info
                     selectedRoom?.let { room ->
                         Card(
                             modifier = Modifier.fillMaxWidth(),
@@ -160,23 +140,12 @@ fun HotelDetailScreen(
                                 containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
                             )
                         ) {
-                            Column(
-                                modifier = Modifier.padding(12.dp)
-                            ) {
-                                Text(
-                                    text = room.roomType,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
-                                )
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(room.roomType, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "${room.price}€ per night",
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
+                                Text("${room.price}€ per night", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                             }
                         }
-                        Spacer(modifier = Modifier.height(8.dp))
                     }
 
                     OutlinedTextField(
@@ -186,12 +155,7 @@ fun HotelDetailScreen(
                             nameError = if (it.isBlank()) "Name is required" else null
                         },
                         label = { Text("Full Name") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                         isError = nameError != null,
                         supportingText = { nameError?.let { Text(it) } },
                         modifier = Modifier.fillMaxWidth()
@@ -204,44 +168,53 @@ fun HotelDetailScreen(
                             emailError = validateEmail(it)
                         },
                         label = { Text("Email Address") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Email,
-                                contentDescription = null
-                            )
-                        },
+                        leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                         isError = emailError != null,
                         supportingText = { emailError?.let { Text(it) } },
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    Divider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        color = MaterialTheme.colorScheme.outlineVariant
-                    )
+                    Text("Asociar a viaje:", style = MaterialTheme.typography.labelMedium)
 
-                    // Date information
+                    Box {
+                        OutlinedTextField(
+                            value = selectedTrip?.title ?: "Selecciona un viaje",
+                            onValueChange = {},
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false,
+                            trailingIcon = {
+                                IconButton(onClick = { expanded = true }) {
+                                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                                }
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            trips.forEach { trip ->
+                                DropdownMenuItem(
+                                    text = { Text(trip.title) },
+                                    onClick = {
+                                        selectedTrip = trip
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Divider(modifier = Modifier.padding(vertical = 8.dp), color = MaterialTheme.colorScheme.outlineVariant)
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.CalendarMonth,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+                        Icon(Icons.Default.CalendarMonth, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                         Column {
-                            Text(
-                                text = "Stay Period",
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-                            Text(
-                                text = "$startDate to $endDate",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 16.sp
-                            )
+                            Text("Stay Period", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f))
+                            Text("$startDate to $endDate", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                         }
                     }
                 }
@@ -249,7 +222,6 @@ fun HotelDetailScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        // Validate inputs
                         nameError = if (guestName.isBlank()) "Name is required" else null
                         emailError = validateEmail(guestEmail)
 
@@ -258,28 +230,15 @@ fun HotelDetailScreen(
                             selectedRoomId?.let { roomId ->
                                 coroutineScope.launch {
                                     try {
-                                        // Verificar disponibilidad nuevamente antes de reservar
-                                        viewModel.checkAvailability(
-                                            startDate = startDate,
-                                            endDate = endDate,
-                                            hotelId = hotelId
-                                        )
-
-                                        // Esperar a que se actualice la disponibilidad
+                                        viewModel.checkAvailability(startDate, endDate, hotelId)
                                         delay(500)
 
-                                        // Verificar si la habitación sigue disponible
                                         val isStillAvailable = availabilityResults?.hotels
                                             ?.firstOrNull { it.id == hotelId }
-                                            ?.rooms
-                                            ?.any { it.id == roomId } ?: false
+                                            ?.rooms?.any { it.id == roomId } ?: false
 
                                         if (!isStillAvailable) {
-                                            Toast.makeText(
-                                                context,
-                                                "This room is no longer available. Please select another room.",
-                                                Toast.LENGTH_LONG
-                                            ).show()
+                                            Toast.makeText(context, "This room is no longer available.", Toast.LENGTH_LONG).show()
                                             isBookingInProgress = false
                                             showBookingDialog = false
                                             return@launch
@@ -300,18 +259,25 @@ fun HotelDetailScreen(
                                             reservationId = resId
                                             showBookingDialog = false
                                             showSuccessDialog = true
+
+                                            reservationViewModel.addReservation(
+                                                ReservationEntity(
+                                                    id = 0,
+                                                    tripId = selectedTrip?.id ?: 0L,
+                                                    hotelName = hotel?.name ?: "",
+                                                    roomType = selectedRoom?.roomType ?: "",
+                                                    checkIn = startDate,
+                                                    checkOut = endDate,
+                                                    imageUrl = selectedRoom?.images?.firstOrNull(),
+                                                    reservationId = resId
+                                                )
+                                            )
                                         } else {
-                                            // Si hay un error en error.value, usarlo; de lo contrario, mostrar mensaje genérico
-                                            val errorMessage = viewModel.error.value.takeIf { it.isNotEmpty() }
-                                                ?: "Booking failed. Please try again."
-                                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                                            val msg = viewModel.error.value.takeIf { it.isNotEmpty() } ?: "Booking failed"
+                                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                                         }
                                     } catch (e: Exception) {
-                                        Toast.makeText(
-                                            context,
-                                            e.message ?: "Booking failed",
-                                            Toast.LENGTH_LONG
-                                        ).show()
+                                        Toast.makeText(context, e.message ?: "Booking failed", Toast.LENGTH_LONG).show()
                                     } finally {
                                         isBookingInProgress = false
                                     }
@@ -323,11 +289,7 @@ fun HotelDetailScreen(
                     modifier = Modifier.fillMaxWidth(0.75f)
                 ) {
                     if (isBookingInProgress) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                     } else {
                         Text("Confirm Booking")
                     }
@@ -344,7 +306,9 @@ fun HotelDetailScreen(
         )
     }
 
-    // Success Dialog
+
+
+// Success Dialog
     if (showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { },

@@ -1,5 +1,3 @@
-// TravelScreen.kt
-
 package com.example.FlyHigh.ui.view
 
 import androidx.compose.foundation.background
@@ -16,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.FlyHigh.data.local.entity.TripEntity
+import com.example.FlyHigh.ui.viewmodel.ReservationViewModel
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,6 +25,8 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
+    val reservationViewModel: ReservationViewModel = hiltViewModel()
+
     val currentUserId by viewModel.currentUserId.collectAsState()
 
     LaunchedEffect(currentUserId) {
@@ -74,11 +76,14 @@ fun TravelScreen(navController: NavController, viewModel: TravelViewModel) {
             } else {
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     items(travels) { travel ->
+                        val reservation by reservationViewModel.getReservationByTripId(travel.id).collectAsState(initial = null)
+
                         TravelItem(
                             travel = travel,
                             navController = navController,
                             onDeleteTravel = { viewModel.deleteTravel(travel.id) },
-                            onEditTravel = { navController.navigate("editViaje/${travel.id}") }
+                            onEditTravel = { navController.navigate("editViaje/${travel.id}") },
+                            hasReservation = reservation != null
                         )
                     }
                 }
@@ -118,7 +123,8 @@ fun TravelItem(
     travel: TripEntity,
     navController: NavController,
     onDeleteTravel: () -> Unit,
-    onEditTravel: () -> Unit
+    onEditTravel: () -> Unit,
+    hasReservation: Boolean
 ) {
     val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
 
@@ -126,7 +132,6 @@ fun TravelItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                // ✅ CORREGIDO: forzar recarga con timestamp
                 val timestamp = System.currentTimeMillis()
                 navController.navigate("viaje/${travel.id}?ts=$timestamp")
             },
@@ -197,6 +202,15 @@ fun TravelItem(
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                // ✅ NUEVO: Mostrar si tiene reserva hotelera
+                if (hasReservation) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "🏨 Reserva hotelera confirmada",
+                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.primary)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
