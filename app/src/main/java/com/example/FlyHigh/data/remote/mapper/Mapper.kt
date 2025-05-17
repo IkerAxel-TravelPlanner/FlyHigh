@@ -6,6 +6,7 @@ import com.example.FlyHigh.data.remote.dto.ReserveRequestDto
 import com.example.FlyHigh.domain.model.Hotel
 import com.example.FlyHigh.domain.model.Room
 import com.example.FlyHigh.domain.model.ReserveRequest
+import com.example.FlyHigh.utils.asFullUrl
 
 // mapper for Hotel
 fun HotelDto.toDomain() = Hotel(
@@ -14,7 +15,7 @@ fun HotelDto.toDomain() = Hotel(
     address = address,
     rating = rating,
     rooms = rooms.map { it.toDomain() },
-    imageUrl = imageUrl
+    imageUrl = imageUrl.asFullUrl()
 )
 
 // mapper for Room
@@ -22,7 +23,7 @@ fun RoomDto.toDomain() = Room(
     id = id,
     roomType = roomType,
     price = price,
-    images = images
+    images = images.map { it.asFullUrl() }
 )
 
 // mapper for ReserveRequest

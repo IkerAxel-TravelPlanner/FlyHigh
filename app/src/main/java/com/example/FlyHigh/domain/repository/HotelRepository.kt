@@ -6,10 +6,13 @@ import com.example.FlyHigh.data.remote.mapper.toDomain
 import com.example.FlyHigh.data.remote.mapper.toDto
 import com.example.FlyHigh.domain.model.Availability
 import com.example.FlyHigh.domain.model.Hotel
+import com.example.FlyHigh.domain.model.Reservation
 import com.example.FlyHigh.domain.model.ReserveRequest
 import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
+
+import com.example.FlyHigh.data.remote.mapper.toDomain
 
 @Singleton
 class HotelRepository @Inject constructor(
@@ -55,17 +58,17 @@ class HotelRepository @Inject constructor(
         }
     }
 
-    override suspend fun getReservations(guestEmail: String?): List<ReservationDto> {
+    override suspend fun getReservations(guestEmail: String?): List<Reservation> {
         return try {
             val response = api.getReservations(gid, guestEmail)
-            // Este método necesita un mapeo correcto basado en la respuesta, pero
-            // necesitamos el tipo de retorno adecuado en la interfaz HotelInterface
-            // Actualmente no podemos ver la implementación completa
-            emptyList() // Este es un placeholder - se debe implementar correctamente
+            response.map { it.toDomain() }
         } catch (e: HttpException) {
             throw e
         } catch (e: Exception) {
             throw Exception("Failed to get reservations: ${e.message}")
         }
     }
+
 }
+
+//FUNCIONA

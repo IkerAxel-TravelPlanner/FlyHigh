@@ -84,6 +84,13 @@ fun HotelDetailScreen(
 
     val hotel = availabilityResults?.hotels?.firstOrNull { it.id == hotelId }
 
+    LaunchedEffect(hotel) {
+        println("Hotel image: ${hotel?.imageUrl}")
+        hotel?.rooms?.forEach {
+            println("Room: ${it.roomType} -> Images: ${it.images}")
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(

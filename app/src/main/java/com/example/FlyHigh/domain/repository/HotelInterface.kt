@@ -4,6 +4,7 @@ import com.example.FlyHigh.domain.model.Availability
 import com.example.FlyHigh.domain.model.Hotel
 import com.example.FlyHigh.domain.model.ReserveRequest
 import com.example.FlyHigh.data.remote.dto.ReservationDto
+import com.example.FlyHigh.domain.model.Reservation
 
 interface HotelInterface {
 
@@ -25,5 +26,5 @@ interface HotelInterface {
     suspend fun cancelReservation(reserveRequest: ReserveRequest): Boolean
 
     /** Get reservations by guest email. */
-    suspend fun getReservations(guestEmail: String? = null): List<ReservationDto>
+    suspend fun getReservations(guestEmail: String? = null): List<Reservation>
 }

@@ -2,6 +2,7 @@ package com.example.FlyHigh.data.remote.api
 
 import com.example.FlyHigh.data.remote.dto.AvailabilityResponseDto
 import com.example.FlyHigh.data.remote.dto.HotelDto
+import com.example.FlyHigh.data.remote.dto.ReservationDto
 import com.example.FlyHigh.data.remote.dto.ReservationResponseBody
 import com.example.FlyHigh.data.remote.dto.ReservationResponseDto
 import com.example.FlyHigh.data.remote.dto.ReserveRequestDto
@@ -42,5 +43,6 @@ interface HotelApiService {
     suspend fun getReservations(
         @Path("group_id") groupId: String,
         @Query("guest_email") guestEmail: String? = null
-    ): ReservationResponseDto
+    ): List<ReservationDto>
+
 }
