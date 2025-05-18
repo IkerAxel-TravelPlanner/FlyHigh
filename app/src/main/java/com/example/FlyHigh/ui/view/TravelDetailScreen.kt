@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +22,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import com.example.FlyHigh.data.local.entity.ItineraryItemEntity
 import com.example.FlyHigh.ui.viewmodel.ReservationViewModel
 import com.example.FlyHigh.ui.viewmodel.TravelViewModel
@@ -47,6 +49,7 @@ fun TravelDetailScreen(
     val tripImages by viewModel.tripImages.observeAsState(emptyList())
     val reservations by reservationViewModel.getReservationByTripId(viajeIdLong).collectAsState(initial = null)
 
+    var fullScreenImage by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(viajeIdLong) {
         viewModel.loadImagesForTrip(viajeIdLong)
@@ -63,13 +66,9 @@ fun TravelDetailScreen(
         }
     }
 
-
-
     if (viaje == null) {
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(32.dp),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
@@ -126,15 +125,28 @@ fun TravelDetailScreen(
                         contentPadding = PaddingValues(8.dp)
                     ) {
                         items(tripImages) { image ->
-                            Image(
-                                painter = rememberAsyncImagePainter(Uri.parse(image.uri)),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .size(100.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                            )
+                            Box {
+                                AsyncImage(
+                                    model = Uri.parse(image.uri),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .size(100.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable { fullScreenImage = image.uri }
+                                )
+                                IconButton(
+                                    onClick = {
+                                        viewModel.deleteImageForTrip(viajeIdLong, image.uri)
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .background(Color.Black.copy(alpha = 0.4f), shape = RoundedCornerShape(50))
+                                        .padding(4.dp)
+                                ) {
+                                    Icon(Icons.Filled.Delete, contentDescription = "Eliminar", tint = Color.White)
+                                }
+                            }
                         }
                     }
                 }
@@ -157,15 +169,15 @@ fun TravelDetailScreen(
                                 Text("Check-out: ${reservation.checkOut}")
                                 reservation.imageUrl?.let { url ->
                                     Spacer(modifier = Modifier.height(8.dp))
-                                    println("Reservation Image URL: ${reservation.imageUrl}")
-                                    Image(
-                                        painter = rememberAsyncImagePainter(url),
+                                    AsyncImage(
+                                        model = url,
                                         contentDescription = "Hotel Image",
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(180.dp)
                                             .clip(RoundedCornerShape(8.dp))
+                                            .clickable { fullScreenImage = url }
                                     )
                                 }
                             }
@@ -174,7 +186,6 @@ fun TravelDetailScreen(
                 }
             }
 
-
             item {
                 Text(text = "Itinerarios:", style = MaterialTheme.typography.headlineSmall)
             }
@@ -182,6 +193,23 @@ fun TravelDetailScreen(
             items(itinerarios) { itinerary ->
                 ItineraryCard(itinerary, navController, viajeId, viewModel)
             }
+        }
+
+        fullScreenImage?.let { uri ->
+            AlertDialog(
+                onDismissRequest = { fullScreenImage = null },
+                confirmButton = {},
+                text = {
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            )
         }
     }
 }

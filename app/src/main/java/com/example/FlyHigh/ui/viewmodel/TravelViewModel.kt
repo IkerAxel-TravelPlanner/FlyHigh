@@ -367,4 +367,11 @@ class TravelViewModel @Inject constructor(
             loadImagesForTrip(tripId)
         }
     }
+    fun deleteImageForTrip(tripId: Long, uri: String) {
+        viewModelScope.launch {
+            tripImageRepo.deleteImage(tripId, uri)
+            loadImagesForTrip(tripId)
+        }
+    }
+
 }
