@@ -18,4 +18,8 @@ class TripImageRepository @Inject constructor(
             TripImage(id = it.id, tripId = it.tripId, uri = it.uri)
         }
     }
+    override suspend fun deleteImage(tripId: Long, uri: String) {
+        dao.deleteImageByTripIdAndUri(tripId, uri)
+    }
+
 }
