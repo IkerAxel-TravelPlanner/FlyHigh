@@ -103,6 +103,40 @@ T4.2 -
 T4.3 - 
 
 
+Sprint 5 --------------------------------------------
+
+Fix Errors - Iker Infantes - Axel Berral
+
+T1.1 - Axel Berral
+
+T1.2 - Axel Berral
+
+T1.3 - Axel Berral
+
+T1.4 - Axel Berral
+
+T2.1 - Axel Berral
+
+T2.2 - Axel Berral
+
+T2.3 - Iker Infantes - Axel Berral
+
+T2.4 - Axel Berral
+
+T3.1 - Iker Infantes
+
+T3.2 - Iker Infantes 
+
+T3.3 - Iker Infantes
+
+T4.1 - Iker Infantes
+
+T4.2 - Iker Infantes
+
+T4.3 - Iker Infantes
+
+T4.4 - Iker Infantes
+
 
 📅 Fechas Claves
 
@@ -121,3 +155,7 @@ Fin del Sprint_3: 30/03/2025
 Inicio del Sprint_4: 08/04/2025
 
 Fin del Sprint_4: 27/04/2025
+
+Inicio del Sprint_5: 07/05/2025
+
+Fin del Sprint_5: 18/05/2025
