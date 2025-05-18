@@ -395,7 +395,7 @@ fun HotelDetailScreen(
                         }
                     }
 
-                    Text("A confirmation email has been sent to:")
+                    Text("Se ha enviado el mail de confirmación a:")
                     Text(
                         text = guestEmail,
                         fontWeight = FontWeight.SemiBold,
